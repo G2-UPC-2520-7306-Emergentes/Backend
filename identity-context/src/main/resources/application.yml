@@ -1,0 +1,26 @@
+server:
+  port: 8081 # Puerto unico para este microservicio
+
+spring:
+  application:
+    name: identity-context
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/identity_db
+    username: foodchain_user      # usa el usuario creado en docker-compose
+    password: foodchain_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 'update' es �til para desarrollo. 'validate' es mejor para produccion.
+    show-sql: true # Muestra las queries SQL en la consola para depurar.
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+authorization:
+  jwt:
+    secret: "MiClaveSecretaSuperLargaYComplejaParaElProyectoFoodChain1234567890" # min 32 caracteres
+    expiration:
+      days: 7
