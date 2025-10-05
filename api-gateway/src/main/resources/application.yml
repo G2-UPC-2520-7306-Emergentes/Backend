@@ -1,0 +1,24 @@
+server:
+  port: 8080 # Puerto de entrada �nico para todo el sistema
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # Aqu� definimos las reglas de enrutamiento a nuestros futuros Bounded Contexts
+      routes:
+        - id: identity-context-route
+          uri: http://localhost:8081 # Puerto del Identity Service
+          predicates:
+            - Path=/api/v1/iam/** # Cualquier petici�n a /iam/... ir� a este servicio
+
+        - id: batch-management-context-route
+          uri: http://localhost:8082 # Puerto del Batch Management Service
+          predicates:
+            - Path=/api/v1/batches/**
+
+        - id: traceability-context-route
+          uri: http://localhost:8083 # Puerto del Traceability Service
+          predicates:
+            - Path=/api/v1/trace/**
