@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise">
+    <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/blockchain-worker-context/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/application/internal/queryservices/UserQueryServiceImpl.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/domain/model/aggregates/User.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/domain/model/queries/GetUserByEmailQuery.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/infrastructure/persistence/jpa/repositories/RoleRepositoryImpl.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/interfaces/rest/UsersController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shared-domain/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shared-domain/src/main/java/com/foodchain/shared_domain/domain/model/aggregates/AuditableAbstractAggregateRoot.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/traceability-context/src/main/java" charset="UTF-8" />
+  </component>
+</project>
