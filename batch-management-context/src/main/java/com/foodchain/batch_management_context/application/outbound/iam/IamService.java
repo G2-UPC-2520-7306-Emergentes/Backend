@@ -2,7 +2,6 @@
 package com.foodchain.batch_management_context.application.outbound.iam;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface IamService {
     /**
