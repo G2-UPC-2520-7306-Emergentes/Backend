@@ -1,5 +1,5 @@
-// infrastructure/security/WebSecurityConfiguration.java
-package com.foodchain.identity_context.infrastructure.security;
+﻿// infrastructure/security/WebSecurityConfiguration.java
+package com.foodchain.batch_management_context.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +11,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
 import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
-@EnableWebSecurity
+@EnableWebSecurity // So the HttpSecurity http bean can work... for some reason
 public class WebSecurityConfiguration {
 
     private final BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter;
@@ -23,6 +24,7 @@ public class WebSecurityConfiguration {
     public WebSecurityConfiguration(BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter) {
         this.bearerAuthorizationRequestFilter = bearerAuthorizationRequestFilter;
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(configurer -> configurer.configurationSource(request -> {
@@ -33,13 +35,14 @@ public class WebSecurityConfiguration {
                     return cors;
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/iam/auth/sign-up", "/api/v1/iam/auth/sign-in", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated() // ¡AHORA SÍ! Todas las demás peticiones requieren autenticación.
+                        // Permitimos el acceso a Swagger UI y la documentación OpenAPI
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // TODAS las demás peticiones deben ser autenticadas.
+                        .anyRequest().authenticated()
                 );
 
-        // Añadimos nuestro filtro personalizado ANTES del filtro de autenticación estándar.
         http.addFilterBefore(bearerAuthorizationRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
