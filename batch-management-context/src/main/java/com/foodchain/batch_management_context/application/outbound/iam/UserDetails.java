@@ -1,4 +1,4 @@
-﻿// application/outbound/iam/UserDetails.java
+// application/outbound/iam/UserDetails.java
 package com.foodchain.batch_management_context.application.outbound.iam;
 
 import java.util.Set;

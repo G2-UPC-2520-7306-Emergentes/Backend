@@ -24,3 +24,9 @@ authorization:
     secret: "MiClaveSecretaSuperLargaYComplejaParaElProyectoFoodChain1234567890" # min 32 caracteres
     expiration:
       days: 7
+
+openapi:
+  service:
+    title: "FoodChain - Identity Service API"
+    version: "v1.0.0"
+    description: "API para la gestión de Identidad y Acceso (IAM) en la plataforma FoodChain."

@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/internal/commandservices/BatchCommandServiceImpl.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/blockchain-worker-context/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-context/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/application/internal/queryservices/UserQueryServiceImpl.java" charset="UTF-8" />

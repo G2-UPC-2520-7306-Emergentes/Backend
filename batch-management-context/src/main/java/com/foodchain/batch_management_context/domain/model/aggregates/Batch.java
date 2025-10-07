@@ -1,4 +1,4 @@
-﻿// domain/model/aggregates/Batch.java
+// domain/model/aggregates/Batch.java
 package com.foodchain.batch_management_context.domain.model.aggregates;
 
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;

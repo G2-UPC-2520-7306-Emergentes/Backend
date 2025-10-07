@@ -1,4 +1,4 @@
-﻿// application/internal/commandservices/BatchCommandServiceImpl.java
+// application/internal/commandservices/BatchCommandServiceImpl.java
 package com.foodchain.batch_management_context.application.internal.commandservices;
 
 import com.foodchain.batch_management_context.domain.model.aggregates.Batch;

@@ -19,7 +19,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  api:
-    clients:
-      iam-service:
-        base-url: "http://localhost:8081/api/v1/iam/auth" # URL base para el servicio de identidad
+api:
+  clients:
+    iam-service:
+      base-url: "http://localhost:8081/api/v1/iam/auth" # URL base para el servicio de identidad
+
+openapi:
+  service:
+    title: "FoodChain - Batch Management Service API"
+    version: "v1.0.0"
+    description: "API para la gestión del ciclo de vida de lotes en la plataforma FoodChain."

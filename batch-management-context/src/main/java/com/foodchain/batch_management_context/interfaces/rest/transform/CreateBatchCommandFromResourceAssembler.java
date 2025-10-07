@@ -1,4 +1,4 @@
-﻿// interfaces/rest/transform/CreateBatchCommandFromResourceAssembler.java
+// interfaces/rest/transform/CreateBatchCommandFromResourceAssembler.java
 package com.foodchain.batch_management_context.interfaces.rest.transform;
 
 import com.foodchain.batch_management_context.domain.model.commands.CreateBatchCommand;

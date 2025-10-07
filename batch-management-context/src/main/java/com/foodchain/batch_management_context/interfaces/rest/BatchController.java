@@ -1,4 +1,4 @@
-﻿// interfaces/rest/BatchController.java
+// interfaces/rest/BatchController.java
 package com.foodchain.batch_management_context.interfaces.rest;
 
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;

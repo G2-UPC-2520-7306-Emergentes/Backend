@@ -1,4 +1,4 @@
-﻿// domain/model/valueobjects/BatchStatus.java
+// domain/model/valueobjects/BatchStatus.java
 package com.foodchain.batch_management_context.domain.model.valueobjects;
 
 public enum BatchStatus {

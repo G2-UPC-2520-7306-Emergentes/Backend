@@ -1,4 +1,4 @@
-﻿// domain/model/valueobjects/BatchId.java
+// domain/model/valueobjects/BatchId.java
 package com.foodchain.batch_management_context.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;

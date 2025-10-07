@@ -3,26 +3,48 @@ package com.foodchain.identity_context.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
 @Configuration
-@EnableMethodSecurity
 @EnableWebSecurity
+@EnableMethodSecurity
 public class WebSecurityConfiguration {
 
+    private final UserDetailsService userDetailsService;
     private final BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter;
+    private final PasswordEncoder passwordEncoder;
 
-    public WebSecurityConfiguration(BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter) {
+    public WebSecurityConfiguration(UserDetailsService userDetailsService, BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter, PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
         this.bearerAuthorizationRequestFilter = bearerAuthorizationRequestFilter;
+        this.passwordEncoder = passwordEncoder;
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        var authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(configurer -> configurer.configurationSource(request -> {
@@ -32,15 +54,17 @@ public class WebSecurityConfiguration {
                     cors.setAllowedHeaders(List.of("*"));
                     return cors;
                 }))
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF explícitamente
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/iam/auth/sign-up", "/api/v1/iam/auth/sign-in", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated() // ¡AHORA SÍ! Todas las demás peticiones requieren autenticación.
+                        // Nuestros endpoints de auth y Swagger son públicos
+                        .requestMatchers("/api/v1/iam/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // Todas las demás peticiones deben ser autenticadas
+                        .anyRequest().authenticated()
                 );
 
-        // Añadimos nuestro filtro personalizado ANTES del filtro de autenticación estándar.
-        http.addFilterBefore(bearerAuthorizationRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.authenticationProvider(authenticationProvider()); // Configuramos nuestro proveedor de autenticación
+        http.addFilterBefore(bearerAuthorizationRequestFilter, UsernamePasswordAuthenticationFilter.class); // Añadimos nuestro filtro JWT
 
         return http.build();
     }

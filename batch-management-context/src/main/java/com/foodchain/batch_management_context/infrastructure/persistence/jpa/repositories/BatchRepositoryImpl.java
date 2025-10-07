@@ -1,4 +1,4 @@
-﻿// infrastructure/persistence/jpa/repositories/BatchRepositoryImpl.java
+// infrastructure/persistence/jpa/repositories/BatchRepositoryImpl.java
 package com.foodchain.batch_management_context.infrastructure.persistence.jpa.repositories;
 
 import com.foodchain.batch_management_context.domain.model.aggregates.Batch;
