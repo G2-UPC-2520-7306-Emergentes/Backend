@@ -1,4 +1,4 @@
-﻿// infrastructure/outbound/iam/IamServiceImpl.java
+// infrastructure/outbound/iam/IamServiceImpl.java
 package com.foodchain.traceability_context.infrastructure.outbound.iam;
 
 import com.foodchain.traceability_context.application.outbound.iam.IamService;

@@ -1,4 +1,4 @@
-﻿// application/outbound/messaging/events/EventPublisher.java
+// application/outbound/messaging/events/EventPublisher.java
 package com.foodchain.traceability_context.application.outbound.messaging.events;
 
 // Usamos un tipo genérico para que este publicador pueda reutilizarse para cualquier evento

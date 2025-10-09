@@ -1,4 +1,4 @@
-﻿// interfaces/rest/transform/RegisterTraceabilityEventCommandFromResourceAssembler.java
+// interfaces/rest/transform/RegisterTraceabilityEventCommandFromResourceAssembler.java
 package com.foodchain.traceability_context.interfaces.rest.transform;
 
 import com.foodchain.traceability_context.domain.model.commands.RegisterTraceabilityEventCommand;

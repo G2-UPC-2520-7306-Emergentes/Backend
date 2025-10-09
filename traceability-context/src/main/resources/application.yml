@@ -1,12 +1,12 @@
 server:
-  port: 8083 # Puerto �nico para este microservicio
+  port: 8083 # Puerto Único para este microservicio
 
 spring:
   application:
     name: traceability-context
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/traceability_db # �CONECTA A SU PROPIA BASE DE DATOS!
+    url: jdbc:mysql://127.0.0.1:3307/traceability_db # CONECTA A SU PROPIA BASE DE DATOS!
     username: foodchain_user
     password: foodchain_password
 
@@ -15,9 +15,20 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  # --- CONFIGURACI�N PARA EL PRODUCTOR DE MENSAJES ---
+  # --- CONFIGURACIÓN PARA EL PRODUCTOR DE MENSAJES ---
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: user
     password: password
+
+api:
+  clients:
+    iam-service:
+      base-url: "http://localhost:8081/api/v1/iam/auth"
+
+openapi:
+  service:
+    title: "FoodChain - Traceability Service API"
+    version: "v1.0.0"
+    description: "API para el registro de eventos de trazabilidad en la plataforma FoodChain."

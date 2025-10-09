@@ -1,4 +1,4 @@
-﻿// domain/model/valueobjects/BlockchainStatus.java
+// domain/model/valueobjects/BlockchainStatus.java
 package com.foodchain.traceability_context.domain.model.valueobjects;
 
 public enum BlockchainStatus {
