@@ -1,0 +1,23 @@
+server:
+  port: 8083 # Puerto �nico para este microservicio
+
+spring:
+  application:
+    name: traceability-context
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/traceability_db # �CONECTA A SU PROPIA BASE DE DATOS!
+    username: foodchain_user
+    password: foodchain_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # --- CONFIGURACI�N PARA EL PRODUCTOR DE MENSAJES ---
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: user
+    password: password
