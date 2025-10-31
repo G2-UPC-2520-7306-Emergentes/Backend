@@ -9,6 +9,7 @@
         <module name="api-gateway" />
         <module name="shared-domain" />
         <module name="batch-management-context" />
+        <module name="shared-infrastructure" />
         <module name="identity-context" />
       </profile>
       <profile name="Annotation profile for blockchain-worker-context" enabled="true">
@@ -38,6 +39,7 @@
       <module name="blockchain-worker-context" options="-parameters" />
       <module name="identity-context" options="-parameters" />
       <module name="shared-domain" options="-parameters" />
+      <module name="shared-infrastructure" options="-parameters" />
       <module name="traceability-context" options="-parameters" />
     </option>
   </component>

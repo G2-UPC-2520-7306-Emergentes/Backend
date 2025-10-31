@@ -24,6 +24,7 @@
         <module>traceability-context</module>
         <module>blockchain-worker-context</module>
         <module>shared-domain</module>
+        <module>shared-infrastructure</module>
     </modules>
 
     <properties>

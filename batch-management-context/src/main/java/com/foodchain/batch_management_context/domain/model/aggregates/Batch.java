@@ -38,6 +38,9 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
     @Column(nullable = false)
     private BatchStatus status;
 
+    @Column
+    private String imageUrl;
+
     /**
      * Constructor privado. La creación se gestiona a través del factory method.
      */
@@ -62,13 +65,44 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
     }
 
     /**
-     * MÉTODO DE NEGOCIO: Cierra el lote.
-     * Encapsula la regla de que solo un lote abierto puede ser cerrado.
+     * MÉTODO DE NEGOCIO: Actualiza los detalles de un lote.
+     * Encapsula la regla de que solo un lote abierto puede ser modificado.
+     * @param newProductDescription La nueva descripción del producto.
      */
-    public void close() {
+    public void updateDetails(String newProductDescription) {
+        // Guard Clause: Proteger la invariante de que un lote cerrado es inmutable.
         if (this.status == BatchStatus.CLOSED) {
-            throw new IllegalStateException("Cannot close a batch that is already closed.");
+            throw new IllegalStateException("No se puede editar un lote que ya está cerrado.");
         }
-        this.status = BatchStatus.CLOSED;
+        if (newProductDescription == null || newProductDescription.isBlank()) {
+            throw new IllegalArgumentException("La descripción del producto no puede estar vacía.");
+        }
+        this.productDescription = newProductDescription;
+    }
+
+    /**
+     * FACTORY METHOD: Punto de entrada para crear un nuevo lote como duplicado de otro.
+     * @param originalBatch El lote original que se usará como plantilla.
+     * @return una nueva instancia de Batch con datos copiados y una nueva identidad.
+     */
+    public static Batch duplicateFrom(Batch originalBatch) {
+        // La lógica de negocio de la duplicación vive aquí.
+        // Copiamos la descripción y el ID de la empresa.
+        // La nueva instancia obtendrá un ID, fecha de creación y estado 'OPEN' nuevos
+        // por defecto en su constructor.
+        return new Batch(originalBatch.getEnterpriseId(), originalBatch.getProductDescription());
+    }
+
+    /**
+     * MÉTODO DE NEGOCIO: Asigna una URL de imagen a un lote.
+     * La lógica de negocio podría incluir validaciones de formato de URL, etc.
+     * @param imageUrl La URL pública de la imagen.
+     */
+    public void assignImageUrl(String imageUrl) {
+        // Guard Clause: Proteger la invariante de que un lote cerrado es inmutable.
+        if (this.status == BatchStatus.CLOSED) {
+            throw new IllegalStateException("No se puede cambiar la imagen de un lote que ya está cerrado.");
+        }
+        this.imageUrl = imageUrl;
     }
 }

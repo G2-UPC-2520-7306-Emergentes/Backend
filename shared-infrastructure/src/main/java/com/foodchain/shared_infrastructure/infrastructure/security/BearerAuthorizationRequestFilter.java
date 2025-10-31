@@ -1,7 +1,6 @@
-// batch-management-context/infrastructure/security/BearerAuthorizationRequestFilter.java
-package com.foodchain.traceability_context.infrastructure.security;
+package com.foodchain.shared_infrastructure.infrastructure.security;
 
-import com.foodchain.traceability_context.application.outbound.iam.IamService;
+import com.foodchain.shared_domain.domain.services.IamService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -17,6 +17,7 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 
     private final IamService iamService;
 
+    // El filtro depende de la INTERFAZ, no de la implementación
     public BearerAuthorizationRequestFilter(IamService iamService) {
         this.iamService = iamService;
     }
@@ -29,15 +30,15 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            // Usamos nuestro ACL (IamService) para validar el token
             iamService.validateTokenAndGetUserDetails(token).ifPresent(userDetails -> {
-                // Si es válido, creamos la autenticación para Spring Security
                 var authorities = userDetails.roles().stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails.email(), null, authorities);
+                        userDetails,
+                        null,
+                        authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             });

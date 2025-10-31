@@ -58,6 +58,11 @@
             <artifactId>shared-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.foodchain</groupId>
+            <artifactId>shared-infrastructure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Dependencias de Test -->
         <dependency>

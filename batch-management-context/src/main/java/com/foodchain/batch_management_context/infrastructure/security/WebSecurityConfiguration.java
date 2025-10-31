@@ -1,7 +1,8 @@
 // infrastructure/security/WebSecurityConfiguration.java
 package com.foodchain.batch_management_context.infrastructure.security;
 
-import com.foodchain.batch_management_context.application.outbound.iam.IamService;
+import com.foodchain.shared_domain.domain.services.IamService;
+import com.foodchain.shared_infrastructure.infrastructure.security.BearerAuthorizationRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

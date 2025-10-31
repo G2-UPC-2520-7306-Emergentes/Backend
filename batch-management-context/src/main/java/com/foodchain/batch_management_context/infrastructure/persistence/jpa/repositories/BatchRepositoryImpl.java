@@ -5,7 +5,10 @@ import com.foodchain.batch_management_context.domain.model.aggregates.Batch;
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;
 import com.foodchain.batch_management_context.domain.repositories.BatchRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class BatchRepositoryImpl implements BatchRepository {
@@ -24,5 +27,15 @@ public class BatchRepositoryImpl implements BatchRepository {
     @Override
     public Optional<Batch> findById(BatchId batchId) {
         return batchJpaRepository.findById(batchId);
+    }
+
+    @Override
+    public List<Batch> findByEnterpriseId(UUID enterpriseId) {
+        return batchJpaRepository.findByEnterpriseId(enterpriseId);
+    }
+
+    @Override
+    public void delete(Batch batch) {
+        batchJpaRepository.delete(batch);
     }
 }

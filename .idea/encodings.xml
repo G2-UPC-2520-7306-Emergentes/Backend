@@ -14,6 +14,7 @@
     <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/interfaces/rest/UsersController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared-domain/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared-domain/src/main/java/com/foodchain/shared_domain/domain/model/aggregates/AuditableAbstractAggregateRoot.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shared-infrastructure/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/traceability-context/src/main/java" charset="UTF-8" />

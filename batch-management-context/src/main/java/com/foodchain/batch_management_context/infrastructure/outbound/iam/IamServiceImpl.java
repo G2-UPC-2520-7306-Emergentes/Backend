@@ -1,8 +1,8 @@
 // infrastructure/outbound/iam/IamServiceImpl.java
 package com.foodchain.batch_management_context.infrastructure.outbound.iam;
 
-import com.foodchain.batch_management_context.application.outbound.iam.IamService;
-import com.foodchain.batch_management_context.application.outbound.iam.UserDetails;
+import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import com.foodchain.shared_domain.domain.services.IamService;
 import org.springframework.beans.factory.annotation.Value; // Importa @Value
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

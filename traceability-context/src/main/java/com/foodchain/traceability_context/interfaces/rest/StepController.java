@@ -1,8 +1,8 @@
 // interfaces/rest/StepController.java
 package com.foodchain.traceability_context.interfaces.rest;
 
-import com.foodchain.traceability_context.application.outbound.iam.IamService;
-import com.foodchain.traceability_context.application.outbound.iam.UserDetails;
+import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import com.foodchain.shared_domain.domain.services.IamService;
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
 import com.foodchain.traceability_context.interfaces.rest.resources.RegisterStepResource;
 import com.foodchain.traceability_context.interfaces.rest.transform.RegisterTraceabilityEventCommandFromResourceAssembler;

@@ -1,4 +1,4 @@
-package com.foodchain.shared_domain.infrastructure.documentation.openapi;
+package com.foodchain.shared_infrastructure.infrastructure.documentation.openapi;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
