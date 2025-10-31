@@ -10,6 +10,7 @@ import com.foodchain.identity_context.interfaces.rest.transform.SignInCommandFro
 import com.foodchain.identity_context.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import com.foodchain.identity_context.interfaces.rest.transform.UserDetailsResourceFromEntityAssembler;
 import com.foodchain.identity_context.interfaces.rest.transform.UserProfileResourceFromEntityAssembler;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,5 +77,17 @@ public class AuthenticationController {
         }
         var resource = UserDetailsResourceFromEntityAssembler.toResourceFromEntity(user.get());
         return ResponseEntity.ok(resource);
+    }
+
+    @PostMapping("/sign-out")
+    @PreAuthorize("isAuthenticated()") // Solo un usuario autenticado puede cerrar su propia sesión
+    public ResponseEntity<?> signOut(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenService.invalidateToken(token);
+            return ResponseEntity.ok().body("Cierre de sesión exitoso.");
+        }
+        return ResponseEntity.badRequest().body("No se encontró token de autorización.");
     }
 }

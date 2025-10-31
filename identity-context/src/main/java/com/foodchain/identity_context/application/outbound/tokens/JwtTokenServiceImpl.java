@@ -2,6 +2,10 @@
 package com.foodchain.identity_context.application.outbound.tokens;
 
 
+import com.foodchain.identity_context.domain.model.entities.InvalidatedToken;
+import com.foodchain.identity_context.domain.repositories.InvalidatedTokenRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,16 +19,20 @@ public class JwtTokenServiceImpl implements TokenService {
 
     private final SecretKey key;
     private final long expirationInMs;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
+
 
     public JwtTokenServiceImpl(
             @Value("${authorization.jwt.secret}") String secret,
-            @Value("${authorization.jwt.expiration.days}") int expirationDays) {
+            @Value("${authorization.jwt.expiration.days}") int expirationDays,
+            InvalidatedTokenRepository invalidatedTokenRepository) {
 
         if (secret.length() < 32) {
             throw new IllegalArgumentException("JWT secret must be at least 256 bits (32 bytes).");
         }
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationInMs = (long) expirationDays * 24 * 60 * 60 * 1000;
+        this.invalidatedTokenRepository = invalidatedTokenRepository;
     }
 
     @Override
@@ -55,5 +63,24 @@ public class JwtTokenServiceImpl implements TokenService {
     public String getEmailFromToken(String token) {
         return Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token).getPayload().getSubject();
+    }
+
+    @Override
+    public void invalidateToken(String token) {
+        Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+        String tokenId = claims.getId(); // Obtenemos el JTI
+        Date expiryDate = claims.getExpiration();
+        invalidatedTokenRepository.save(new InvalidatedToken(tokenId, expiryDate));
+    }
+
+    @Override
+    public boolean isTokenInvalidated(String token) {
+        try {
+            String tokenId = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getId();
+            return invalidatedTokenRepository.findByTokenId(tokenId).isPresent();
+        } catch (JwtException e) {
+            // Si el token es inválido (expirado, malformado), lo consideramos invalidado.
+            return true;
+        }
     }
 }
