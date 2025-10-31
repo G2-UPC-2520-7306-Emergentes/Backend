@@ -1,23 +1,114 @@
-﻿services:
+﻿# Este archivo orquesta el lanzamiento del ecosistema completo de FoodChain.
+# Se espera que cada servicio tenga su propio Dockerfile en su carpeta raíz.
+# Flujo de trabajo: 1. mvn clean install -DskipTests  2. docker-compose up --build
+
+services:
+  # -------------------------------------------------
+  # --- INFRAESTRUCTURA DE TERCEROS ---
+  # -------------------------------------------------
   mysql:
     image: mysql:8.0
     container_name: foodchain_mysql
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword # Contraseña para el usuario root
-      MYSQL_DATABASE: identity_db       # Docker creará esta DB al iniciar
-      MYSQL_USER: foodchain_user      # Nombre de nuestro nuevo usuario
-      MYSQL_PASSWORD: foodchain_password  # Contraseña para nuestro nuevo usuario
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: identity_db
+      MYSQL_USER: foodchain_user
+      MYSQL_PASSWORD: foodchain_password
     volumes:
       - ./db-init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: foodchain_rabbitmq
+    hostname: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: foodchain
       RABBITMQ_DEFAULT_PASS: foodchain
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------
+  # --- NUESTROS MICROSERVICIOS ---
+  # -------------------------------------------------
+  api-gateway:
+    build: ./api-gateway # Busca el Dockerfile en la carpeta ./api-gateway
+    container_name: api_gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      identity-context:
+        condition: service_started
+      batch-management-context:
+        condition: service_started
+      traceability-context:
+        condition: service_started
+
+  identity-context:
+    build: ./identity-context
+    container_name: identity_context
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/identity_db"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  batch-management-context:
+    build: ./batch-management-context
+    container_name: batch_management_context
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/batch_management_db"
+      API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity-context:
+        condition: service_started
+
+  traceability-context:
+    build: ./traceability-context
+    container_name: traceability_context
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
+      API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      identity-context:
+        condition: service_started
+
+  blockchain-worker-context:
+    build: ./blockchain-worker-context
+    container_name: blockchain_worker_context
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      BLOCKCHAIN_RPC-URL: "https://polygon-amoy.g.alchemy.com/v2/jPZqucxKewq9HbUPOZd09"
+      BLOCKCHAIN_CONTRACT-ADDRESS: "0x9565726b49C383c0047c78C1405894a95C74E7c8"
+      BLOCKCHAIN_PRIVATE-KEY: "0abd9a693bb03ebf7f6a9fb4717a4fc6bb620c7dfaf38d36708a5a1bba9227b3"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

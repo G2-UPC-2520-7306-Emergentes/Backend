@@ -10,6 +10,14 @@
         <module name="shared-domain" />
         <module name="batch-management-context" />
         <module name="identity-context" />
+      </profile>
+      <profile name="Annotation profile for blockchain-worker-context" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
         <module name="blockchain-worker-context" />
       </profile>
       <profile name="Annotation profile for FoodChain Backend Monorepo" enabled="true">

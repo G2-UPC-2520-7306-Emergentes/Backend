@@ -1,0 +1,28 @@
+﻿server:
+  port: 8084 # Puerto único para este worker
+
+spring:
+  application:
+    name: blockchain-worker-context
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/traceability_db
+    username: foodchain_user
+    password: foodchain_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: foodchain
+    password: foodchain
+
+# Configuración específica del Worker
+blockchain:
+  rpc-url: "https://polygon-amoy.g.alchemy.com/v2/jPZqucxKewq9HbUPOZd09" # URL de un nodo RPC público de la testnet de Polygon Mumbai
+  contract-address: "0x9565726b49C383c0047c78C1405894a95C74E7c8" # Dirección de tu Smart Contract
+  private-key: "0abd9a693bb03ebf7f6a9fb4717a4fc6bb620c7dfaf38d36708a5a1bba9227b3" # ¡NUNCA pongas una clave privada real aquí en producción!

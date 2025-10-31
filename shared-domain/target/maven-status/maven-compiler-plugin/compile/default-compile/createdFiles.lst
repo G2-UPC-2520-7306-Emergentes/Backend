@@ -1,1 +1,2 @@
 com\foodchain\shared_domain\domain\model\aggregates\AuditableAbstractAggregateRoot.class
+com\foodchain\shared_domain\infrastructure\documentation\openapi\BaseOpenApiConfiguration.class

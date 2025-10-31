@@ -32,14 +32,15 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
         traceabilityRepository.save(event);
 
         // Crea el DTO del evento para enviarlo a la cola
+        var locationDto = new StepRegisteredEvent.LocationDTO(event.getLocation().getLatitude(), event.getLocation().getLongitude());
         var stepRegisteredEvent = new StepRegisteredEvent(
                 event.getId(),
                 event.getBatchId(),
                 event.getEventType(),
                 event.getEventDate(),
-                event.getLocation().toString() // Simplificado
+                event.getActorId(),
+                locationDto
         );
-
         // Publica el evento y se olvida. El worker se encargará del resto.
         eventPublisher.publish(stepRegisteredEvent);
 

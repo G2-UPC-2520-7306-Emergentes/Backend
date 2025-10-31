@@ -39,6 +39,7 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         // Permitimos el acceso a Swagger UI y la documentación OpenAPI
                         .requestMatchers(
+                                "/api/v1/trace/history/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
