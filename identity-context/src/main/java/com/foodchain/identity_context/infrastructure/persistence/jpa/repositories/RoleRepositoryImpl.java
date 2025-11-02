@@ -1,7 +1,7 @@
 package com.foodchain.identity_context.infrastructure.persistence.jpa.repositories;
 
-import com.foodchain.identity_context.domain.model.entities.Role;
-import com.foodchain.identity_context.domain.model.valueobjects.Roles;
+import com.foodchain.identity_context.domain.model.aggregates.Role;
+import com.foodchain.identity_context.domain.model.valueobjects.ERole;
 import com.foodchain.identity_context.domain.repositories.RoleRepository;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
@@ -15,7 +15,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public Optional<Role> findByName(Roles name) {
+    public Optional<Role> findByName(ERole name) {
         return roleJpaRepository.findByName(name);
     }
 
@@ -25,7 +25,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
-    public boolean existsByName(Roles name) {
+    public boolean existsByName(ERole name) {
         return roleJpaRepository.existsByName(name);
     }
 }

@@ -1,7 +1,6 @@
 // domain/model/aggregates/User.java
 package com.foodchain.identity_context.domain.model.aggregates;
 
-import com.foodchain.identity_context.domain.model.entities.Role;
 import com.foodchain.shared_domain.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -77,9 +76,24 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.roles.add(role);
     }
 
-    // --- Métodos de consulta derivados ---
-
+    /**
+     * MÉTODO DE NEGOCIO: Obtiene los nombres de los roles asignados al usuario como un conjunto de cadenas.
+     * @return Un conjunto de nombres de roles.
+     */
     public Set<String> getRoleStrings() {
         return this.roles.stream().map(role -> role.getName().name()).collect(Collectors.toSet());
+    }
+
+    /**
+     * MÉTODO DE NEGOCIO: Asigna un nuevo conjunto de roles al usuario.
+     * Para nuestro sistema, reemplazará el rol existente por el nuevo.
+     * @param newRoles El conjunto de nuevos roles a asignar.
+     */
+    public void assignRoles(Set<Role> newRoles) {
+        if (newRoles == null || newRoles.isEmpty()) {
+            throw new IllegalArgumentException("El conjunto de roles no puede ser nulo o vacío.");
+        }
+        this.roles.clear();
+        this.roles.addAll(newRoles);
     }
 }

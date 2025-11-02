@@ -1,7 +1,7 @@
 package com.foodchain.identity_context.interfaces.events.handlers;
 
-import com.foodchain.identity_context.domain.model.entities.Role;
-import com.foodchain.identity_context.domain.model.valueobjects.Roles;
+import com.foodchain.identity_context.domain.model.aggregates.Role;
+import com.foodchain.identity_context.domain.model.valueobjects.ERole;
 import com.foodchain.identity_context.domain.repositories.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class ApplicationReadyEventHandler {
     @EventListener
     public void on(ApplicationReadyEvent event) {
         LOGGER.info("Verificando si se necesita sembrar roles...");
-        Arrays.stream(Roles.values()).forEach(roleEnum -> {
+        Arrays.stream(ERole.values()).forEach(roleEnum -> {
             if (!roleRepository.existsByName(roleEnum)) {
                 roleRepository.save(new Role(roleEnum));
                 LOGGER.info("Rol {} sembrado.", roleEnum.name());
