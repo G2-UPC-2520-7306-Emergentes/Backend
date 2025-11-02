@@ -1,11 +1,8 @@
 // interfaces/rest/BatchController.java
 package com.foodchain.batch_management_context.interfaces.rest;
 
-import com.foodchain.batch_management_context.domain.model.commands.AssignImageToBatchCommand;
-import com.foodchain.batch_management_context.domain.model.commands.DeleteBatchCommand;
-import com.foodchain.batch_management_context.domain.model.commands.DuplicateBatchCommand;
+import com.foodchain.batch_management_context.domain.model.commands.*;
 import com.foodchain.batch_management_context.interfaces.rest.resources.EditBatchResource;
-import com.foodchain.batch_management_context.domain.model.commands.EditBatchCommand;
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;
 import com.foodchain.batch_management_context.domain.services.BatchCommandService;
 import com.foodchain.batch_management_context.domain.services.BatchQueryService;
@@ -107,6 +104,19 @@ public class BatchController {
         }
 
         var command = new AssignImageToBatchCommand(batchId, userDetails.enterpriseId(), file);
+        batchCommandService.handle(command);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint para marcar un lote como "CERRADO".
+     * Una vez cerrado, no se podrán añadir nuevos pasos ni editarlo.
+     */
+    @PutMapping("/{batchId}/close")
+    @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
+    public ResponseEntity<Void> closeBatch(@PathVariable UUID batchId,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        var command = new CloseBatchCommand(batchId, userDetails.enterpriseId());
         batchCommandService.handle(command);
         return ResponseEntity.ok().build();
     }

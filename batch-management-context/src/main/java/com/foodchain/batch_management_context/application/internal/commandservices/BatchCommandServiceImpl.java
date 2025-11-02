@@ -118,4 +118,22 @@ public class BatchCommandServiceImpl implements BatchCommandService {
         // 4. Persistir los cambios
         batchRepository.save(batch);
     }
+
+    @Override
+    @Transactional
+    public void handle(CloseBatchCommand command) {
+        // 1. Buscar el agregado y validar propiedad
+        var batch = batchRepository.findById(new BatchId(command.batchId()))
+                .orElseThrow(() -> new EntityNotFoundException("Lote no encontrado: " + command.batchId()));
+
+        if (!batch.getEnterpriseId().equals(command.enterpriseId())) {
+            throw new SecurityException("No tiene permisos para cerrar este lote.");
+        }
+
+        // 2. Delegar la lógica de negocio al método del agregado
+        batch.close();
+
+        // 3. Persistir los cambios
+        batchRepository.save(batch);
+    }
 }

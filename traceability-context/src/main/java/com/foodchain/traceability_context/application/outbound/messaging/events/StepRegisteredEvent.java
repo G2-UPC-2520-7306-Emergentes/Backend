@@ -33,6 +33,10 @@ public record StepRegisteredEvent(
      */
     public record LocationDTO(
             Double latitude,
-            Double longitude
+            Double longitude,
+            String address,
+            String city,
+            String country
+
     ) implements Serializable {}
 }

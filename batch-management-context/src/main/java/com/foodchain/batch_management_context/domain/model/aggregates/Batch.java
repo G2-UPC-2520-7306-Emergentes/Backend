@@ -64,6 +64,13 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
         return new Batch(enterpriseId, productDescription);
     }
 
+    public void close() {
+        if (this.status == BatchStatus.CLOSED) {
+            throw new IllegalStateException("No se puede cerrar un lote que ya está cerrado.");
+        }
+        this.status = BatchStatus.CLOSED;
+    }
+
     /**
      * MÉTODO DE NEGOCIO: Actualiza los detalles de un lote.
      * Encapsula la regla de que solo un lote abierto puede ser modificado.

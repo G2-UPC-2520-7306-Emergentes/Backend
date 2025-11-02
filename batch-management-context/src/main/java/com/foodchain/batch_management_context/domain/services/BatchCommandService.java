@@ -10,4 +10,5 @@ public interface BatchCommandService {
     BatchId handle(DuplicateBatchCommand command);
     void handle(DeleteBatchCommand command);
     void handle(AssignImageToBatchCommand command);
+    void handle(CloseBatchCommand command);
 }

@@ -24,9 +24,7 @@ public class TraceabilityEventListener {
     public void onStepRegistered(StepRegisteredEvent event) {
         System.out.println("EVENTO RECIBIDO: " + event);
 
-        // Suponiendo que el evento contiene un hash de los datos del evento
-        // (esto es una mejora que deberíamos hacer en el productor)
-        String hashToAnchor = calculateHash(event); // Simulación
+        String hashToAnchor = calculateHash(event);
 
         var command = new AnchorEventCommand(event.eventId(), hashToAnchor);
         anchoringCommandService.handle(command);
