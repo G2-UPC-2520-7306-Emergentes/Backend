@@ -94,6 +94,12 @@
             <artifactId>shared-domain</artifactId>
             <version>${project.version}</version> <!-- Usa la versión heredada del padre -->
         </dependency>
+
+        <dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.10.0</version> <!-- O la versión estable más reciente -->
+        </dependency>
     </dependencies>
 
     <build>

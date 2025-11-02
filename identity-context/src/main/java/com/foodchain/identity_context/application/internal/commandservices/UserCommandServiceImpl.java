@@ -2,13 +2,14 @@
 package com.foodchain.identity_context.application.internal.commandservices;
 
 import com.foodchain.identity_context.application.outbound.hashing.HashingService;
+import com.foodchain.identity_context.application.outbound.notifications.EmailService;
 import com.foodchain.identity_context.application.outbound.tokens.TokenService;
 import com.foodchain.identity_context.domain.model.aggregates.User;
-import com.foodchain.identity_context.domain.model.commands.AssignUserRoleCommand;
-import com.foodchain.identity_context.domain.model.commands.SignInCommand;
-import com.foodchain.identity_context.domain.model.commands.SignUpCommand;
+import com.foodchain.identity_context.domain.model.commands.*;
 import com.foodchain.identity_context.domain.model.aggregates.Role;
+import com.foodchain.identity_context.domain.model.entities.PasswordResetToken;
 import com.foodchain.identity_context.domain.model.valueobjects.ERole;
+import com.foodchain.identity_context.domain.repositories.PasswordResetTokenRepository;
 import com.foodchain.identity_context.domain.repositories.RoleRepository;
 import com.foodchain.identity_context.domain.repositories.UserRepository;
 import com.foodchain.identity_context.domain.services.UserCommandService;
@@ -26,13 +27,18 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final HashingService hashingService;
     private final RoleRepository roleRepository;
     private final TokenService tokenService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
 
 
-    public UserCommandServiceImpl(UserRepository userRepository, HashingService hashingService, TokenService tokenService, RoleRepository roleRepository) {
+
+    public UserCommandServiceImpl(UserRepository userRepository, HashingService hashingService, TokenService tokenService, RoleRepository roleRepository, PasswordResetTokenRepository passwordResetTokenRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.hashingService = hashingService;
         this.roleRepository = roleRepository;
         this.tokenService = tokenService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -86,5 +92,35 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         // 4. Persistir los cambios
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void handle(RequestPasswordResetCommand command) {
+        var user = userRepository.findByEmail(command.email())
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró usuario con el email: " + command.email()));
+
+        var resetToken = new PasswordResetToken(user);
+        passwordResetTokenRepository.save(resetToken);
+        emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
+    }
+
+    @Override
+    @Transactional
+    public void handle(ResetPasswordCommand command) {
+        var resetToken = passwordResetTokenRepository.findByToken(command.token())
+                .orElseThrow(() -> new IllegalArgumentException("Token de reseteo inválido."));
+
+        if (resetToken.isExpired()) {
+            passwordResetTokenRepository.delete(resetToken);
+            throw new IllegalArgumentException("El token de reseteo ha expirado.");
+        }
+
+        var user = resetToken.getUser();
+        user.updatePassword(hashingService.encode(command.newPassword()));
+        userRepository.save(user);
+
+        // El token ya se usó, lo eliminamos.
+        passwordResetTokenRepository.delete(resetToken);
     }
 }

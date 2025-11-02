@@ -2,6 +2,8 @@
 package com.foodchain.identity_context.interfaces.rest;
 
 import com.foodchain.identity_context.application.outbound.tokens.JwtTokenServiceImpl;
+import com.foodchain.identity_context.domain.model.commands.RequestPasswordResetCommand;
+import com.foodchain.identity_context.domain.model.commands.ResetPasswordCommand;
 import com.foodchain.identity_context.domain.model.queries.GetUserByEmailQuery;
 import com.foodchain.identity_context.domain.services.UserCommandService;
 import com.foodchain.identity_context.domain.services.UserQueryService;
@@ -89,5 +91,17 @@ public class AuthenticationController {
             return ResponseEntity.ok().body("Cierre de sesión exitoso.");
         }
         return ResponseEntity.badRequest().body("No se encontró token de autorización.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody ForgotPasswordResource resource) {
+        userCommandService.handle(new RequestPasswordResetCommand(resource.email()));
+        return ResponseEntity.ok("Si el email existe, se ha enviado un enlace de recuperación.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordResource resource) {
+        userCommandService.handle(new ResetPasswordCommand(resource.token(), resource.newPassword()));
+        return ResponseEntity.ok("Contraseña restablecida con éxito.");
     }
 }

@@ -30,3 +30,8 @@ openapi:
     title: "FoodChain - Identity Service API"
     version: "v1.0.0"
     description: "API para la gestión de Identidad y Acceso (IAM) en la plataforma FoodChain."
+
+twilio:
+  sendgrid:
+    api-key: "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"
+    from-email: "foodchainbleh@gmail.com"

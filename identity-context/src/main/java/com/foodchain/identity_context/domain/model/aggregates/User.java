@@ -96,4 +96,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.roles.clear();
         this.roles.addAll(newRoles);
     }
+
+    public void updatePassword(String newHashedPassword) {
+        this.password = newHashedPassword;
+    }
 }
