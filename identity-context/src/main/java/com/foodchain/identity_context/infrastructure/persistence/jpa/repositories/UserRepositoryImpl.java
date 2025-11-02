@@ -4,6 +4,8 @@ package com.foodchain.identity_context.infrastructure.persistence.jpa.repositori
 import com.foodchain.identity_context.domain.model.aggregates.User;
 import com.foodchain.identity_context.domain.repositories.UserRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,5 +37,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public List<User> findAllByEnterpriseId(UUID enterpriseId) {
+        return userJpaRepository.findAllByEnterpriseId(enterpriseId);
     }
 }
