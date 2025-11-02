@@ -69,6 +69,16 @@
             <artifactId>shared-domain</artifactId>
             <version>${project.version}</version> <!-- Usa la versión heredada del padre -->
         </dependency>
+        <dependency>
+            <groupId>com.foodchain</groupId>
+            <artifactId>shared-infrastructure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.foodchain</groupId>
+            <artifactId>traceability-context</artifactId>
+            <version>${project.version}</version> <!-- Usa la versión heredada del padre -->
+        </dependency>
     </dependencies>
 
 	<build>

@@ -11,6 +11,13 @@ import com.foodchain.batch_management_context.interfaces.rest.resources.CreateBa
 import com.foodchain.batch_management_context.interfaces.rest.transform.BatchResourceFromEntityAssembler;
 import com.foodchain.batch_management_context.interfaces.rest.transform.CreateBatchCommandFromResourceAssembler;
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +32,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/batches")
+@Tag(name = "Batch Management", description = "API para la gestión del ciclo de vida de los lotes de producción.")
 public class BatchController {
 
     private final BatchCommandService batchCommandService;
@@ -35,6 +43,12 @@ public class BatchController {
         this.batchQueryService = batchQueryService;
     }
 
+    @Operation(summary = "Crear un nuevo lote", description = "Crea un nuevo lote asociado a la empresa del usuario autenticado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Lote creado exitosamente", content = @Content(schema = @Schema(implementation = BatchId.class))),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+            @ApiResponse(responseCode = "403", description = "No autorizado para realizar esta acción")
+    })
     @PostMapping
     @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
     public ResponseEntity<BatchId> createBatch(@Valid @RequestBody CreateBatchResource resource,
@@ -44,6 +58,11 @@ public class BatchController {
         return ResponseEntity.status(HttpStatus.CREATED).body(batchId);
     }
 
+    @Operation(summary = "Obtener mis lotes", description = "Devuelve una lista de todos los lotes pertenecientes a la empresa del usuario autenticado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de lotes recuperada exitosamente"),
+            @ApiResponse(responseCode = "403", description = "No autorizado")
+    })
     @GetMapping
     @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
     public ResponseEntity<List<BatchResource>> getMyBatches(@AuthenticationPrincipal UserDetails userDetails) {
@@ -54,11 +73,18 @@ public class BatchController {
         return ResponseEntity.ok(batchResources);
     }
 
+    @Operation(summary = "Editar un lote", description = "Modifica la descripción de un lote existente. Solo se puede editar un lote si su estado no es 'CERRADO'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lote actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Lote no encontrado"),
+            @ApiResponse(responseCode = "409", description = "Conflicto: El lote ya está cerrado y no se puede editar")
+    })
     @PutMapping("/{batchId}")
     @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
-    public ResponseEntity<Void> editBatch(@PathVariable UUID batchId,
-                                          @Valid @RequestBody EditBatchResource resource,
-                                          @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Void> editBatch(
+            @Parameter(description = "ID del lote a editar") @PathVariable UUID batchId,
+            @Valid @RequestBody EditBatchResource resource,
+            @AuthenticationPrincipal UserDetails userDetails) {
         var command = new EditBatchCommand(batchId, userDetails.enterpriseId(), resource.productDescription());
         batchCommandService.handle(command);
         return ResponseEntity.ok().build();

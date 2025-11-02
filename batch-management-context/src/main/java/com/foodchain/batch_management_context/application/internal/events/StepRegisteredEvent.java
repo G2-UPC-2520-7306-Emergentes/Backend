@@ -1,5 +1,4 @@
-// blockchain-worker-context/src/main/java/com/foodchain/blockchain_worker_context/application/internal/events/StepRegisteredEvent.java
-package com.foodchain.blockchain_worker_context.application.internal.events;
+﻿package com.foodchain.batch_management_context.application.internal.events;
 
 import java.io.Serializable;
 import java.util.Date;

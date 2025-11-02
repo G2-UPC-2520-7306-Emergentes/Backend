@@ -19,6 +19,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: foodchain
+    password: foodchain
+
 api:
   clients:
     iam-service:

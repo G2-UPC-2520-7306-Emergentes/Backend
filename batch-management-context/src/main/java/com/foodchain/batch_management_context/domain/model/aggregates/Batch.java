@@ -112,4 +112,54 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
         }
         this.imageUrl = imageUrl;
     }
+
+    public void startProcessing() {
+        if (this.status != BatchStatus.OPEN) {
+            throw new IllegalStateException("Solo se puede iniciar el procesamiento de un lote en estado 'OPEN'.");
+        }
+        this.status = BatchStatus.IN_PROCESSING;
+    }
+
+    public void finishProcessing() {
+        if (this.status != BatchStatus.IN_PROCESSING) {
+            throw new IllegalStateException("Solo se puede finalizar el procesamiento de un lote en estado 'IN_PROCESSING'.");
+        }
+        this.status = BatchStatus.PROCESSED;
+    }
+
+    public void startPacking() {
+        if (this.status != BatchStatus.PROCESSED) {
+            throw new IllegalStateException("Solo se puede iniciar el empaque de un lote en estado 'PROCESSED'.");
+        }
+        this.status = BatchStatus.PACKING;
+    }
+
+    public void finishPacking() {
+        if (this.status != BatchStatus.PACKING) {
+            throw new IllegalStateException("Solo se puede finalizar el empaque de un lote en estado 'PACKING'.");
+        }
+        this.status = BatchStatus.PACKED;
+    }
+
+    public void shipToDistributor() {
+        if (this.status != BatchStatus.PACKED) {
+            throw new IllegalStateException("Solo se puede enviar a distribución un lote en estado 'PACKED'.");
+        }
+        this.status = BatchStatus.IN_TRANSIT;
+    }
+
+    public void receiveInWarehouse() {
+        if (this.status != BatchStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Solo se puede recibir en almacén un lote en estado 'IN_TRANSIT'.");
+        }
+        this.status = BatchStatus.IN_WAREHOUSE;
+    }
+
+    public void markForSale() {
+        // Un lote puede ponerse a la venta desde el almacén o si llega directo a tienda.
+        if (this.status != BatchStatus.IN_WAREHOUSE && this.status != BatchStatus.IN_TRANSIT) {
+            throw new IllegalStateException("El lote no está en una etapa válida para marcarse para la venta.");
+        }
+        this.status = BatchStatus.FOR_SALE;
+    }
 }

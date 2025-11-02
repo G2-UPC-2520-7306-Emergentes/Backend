@@ -12,6 +12,10 @@ import com.foodchain.identity_context.interfaces.rest.transform.SignInCommandFro
 import com.foodchain.identity_context.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import com.foodchain.identity_context.interfaces.rest.transform.UserDetailsResourceFromEntityAssembler;
 import com.foodchain.identity_context.interfaces.rest.transform.UserProfileResourceFromEntityAssembler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,7 +27,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/iam/auth")
+@Tag(name = "Authentication", description = "Endpoints para registro, autenticación y gestión de sesión de usuarios.")
 public class AuthenticationController {
+
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
     private final JwtTokenServiceImpl tokenService;
@@ -34,6 +40,11 @@ public class AuthenticationController {
         this.tokenService = tokenService;
     }
 
+    @Operation(summary = "Registrar un nuevo usuario", description = "Crea una nueva cuenta de usuario en el sistema. Por defecto, se le asigna el rol 'ENTERPRISE_USER'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos (ej. email ya existe o contraseña no cumple los requisitos)")
+    })
     @PostMapping("/sign-up")
     public ResponseEntity<UUID> signUp(@Valid @RequestBody SignUpResource resource) {
         var command = SignUpCommandFromResourceAssembler.toCommandFromResource(resource);
@@ -41,6 +52,11 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userId);
     }
 
+    @Operation(summary = "Iniciar sesión", description = "Autentica a un usuario con su email y contraseña y devuelve un token JWT si las credenciales son válidas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Autenticación exitosa, devuelve el token JWT"),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    })
     @PostMapping("/sign-in")
     public ResponseEntity<AuthenticatedUserResource> signIn(@Valid @RequestBody SignInResource resource) {
         var command = SignInCommandFromResourceAssembler.toCommandFromResource(resource);
@@ -81,8 +97,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(resource);
     }
 
+    @Operation(summary = "Cerrar sesión", description = "Invalida el token JWT actual del usuario, añadiéndolo a una lista negra para que no pueda ser reutilizado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cierre de sesión exitoso"),
+            @ApiResponse(responseCode = "400", description = "No se encontró un token de autorización en la petición")
+    })
     @PostMapping("/sign-out")
-    @PreAuthorize("isAuthenticated()") // Solo un usuario autenticado puede cerrar su propia sesión
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> signOut(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {

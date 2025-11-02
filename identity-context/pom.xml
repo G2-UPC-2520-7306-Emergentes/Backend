@@ -94,7 +94,11 @@
             <artifactId>shared-domain</artifactId>
             <version>${project.version}</version> <!-- Usa la versión heredada del padre -->
         </dependency>
-
+        <dependency>
+            <groupId>com.foodchain</groupId>
+            <artifactId>shared-infrastructure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>

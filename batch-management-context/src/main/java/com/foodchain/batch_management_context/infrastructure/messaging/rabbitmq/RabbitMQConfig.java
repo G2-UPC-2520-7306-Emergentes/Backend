@@ -1,4 +1,4 @@
-package com.foodchain.blockchain_worker_context.infrastructure.messaging.rabbitmq;
+﻿package com.foodchain.batch_management_context.infrastructure.messaging.rabbitmq; // ¡OJO! CAMBIA ESTE PACKAGE SEGÚN EL MÓDULO
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -45,11 +45,8 @@ public class RabbitMQConfig {
         DefaultClassMapper classMapper = new DefaultClassMapper();
         Map<String, Class<?>> idClassMapping = new HashMap<>();
 
-        // ¡VERIFICA ESTA RUTA EN TU CÓDIGO!
-        // Esta es la ruta COMPLETA de la clase StepRegisteredEvent en el productor.
         String producerEventClassId = "com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent";
 
-        // Para blockchain-worker-context:
         Class<?> consumerEventClass = com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent.class;
 
 
