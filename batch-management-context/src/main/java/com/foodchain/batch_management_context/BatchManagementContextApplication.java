@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @Configuration // So BearerAuthorizationRequestFilter can act as a component
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"com.foodchain.batch_management_context", "com.foodchain.shared_domain"})
+@ComponentScan(basePackages = {"com.foodchain.batch_management_context", "com.foodchain.shared_domain", "com.foodchain.shared_infrastructure"})
 public class BatchManagementContextApplication {
     public static void main(String[] args) {
         SpringApplication.run(BatchManagementContextApplication.class, args);
