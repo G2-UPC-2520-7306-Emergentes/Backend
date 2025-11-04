@@ -1,6 +1,8 @@
 // domain/model/commands/RegisterTraceabilityEventCommand.java
 package com.foodchain.traceability_context.domain.model.commands;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.UUID;
 
 /**
@@ -17,5 +19,6 @@ public record RegisterTraceabilityEventCommand(
         String eventType,
         UUID actorId,
         Double latitude,
-        Double longitude
+        Double longitude,
+        MultipartFile proofImageFile
 ) {}

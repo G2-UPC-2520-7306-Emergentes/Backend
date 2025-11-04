@@ -1,8 +1,8 @@
 package com.foodchain.blockchain_worker_context.interfaces.messaging;
 
-import com.foodchain.blockchain_worker_context.application.internal.events.StepRegisteredEvent;
 import com.foodchain.blockchain_worker_context.domain.model.commands.AnchorEventCommand;
 import com.foodchain.blockchain_worker_context.domain.services.AnchoringCommandService;
+import com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

@@ -47,28 +47,35 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
     @Column(unique = true) // El hash de la transacción debe ser único
     private String transactionHash;
 
+    @Column
+    private String proofImageUrl; // URL donde se almacena la imagen
+
+    @Column
+    private String proofImageHash; // Hash SHA-256 del contenido de la imagen
+
     /**
      * Constructor privado. La creación se fuerza a través del factory method.
      */
-    private TraceabilityEvent(UUID batchId, String eventType, UUID actorId, Location location) {
+    private TraceabilityEvent(UUID batchId, String eventType, UUID actorId, Location location, String proofImageUrl, String proofImageHash) {
         this.id = UUID.randomUUID();
         this.batchId = batchId;
         this.eventType = eventType;
         this.actorId = actorId;
         this.location = location;
         this.eventDate = new Date();
-        this.blockchainStatus = BlockchainStatus.PENDING; // eL evento nace como 'PENDIENTE'.
+        this.blockchainStatus = BlockchainStatus.PENDING;
+        this.proofImageUrl = proofImageUrl;
+        this.proofImageHash = proofImageHash;
     }
 
     /**
-     * FACTORY METHOD: Punto de entrada controlado para registrar un nuevo evento.
+     * FACTORY METHOD actualizado.
      */
-    public static TraceabilityEvent record(UUID batchId, String eventType, UUID actorId, Location location) {
-        // Guard Clauses para proteger la creación
+    public static TraceabilityEvent record(UUID batchId, String eventType, UUID actorId, Location location, String proofImageUrl, String proofImageHash) {
         if (batchId == null || eventType == null || eventType.isBlank() || actorId == null || location == null) {
-            throw new IllegalArgumentException("All fields are required to record a traceability event.");
+            throw new IllegalArgumentException("Todos los campos básicos son requeridos para registrar un evento.");
         }
-        return new TraceabilityEvent(batchId, eventType, actorId, location);
+        return new TraceabilityEvent(batchId, eventType, actorId, location, proofImageUrl, proofImageHash);
     }
 
     /**

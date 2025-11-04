@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.UUID;
 
 @RestController
@@ -49,12 +51,14 @@ public class StepController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos (ej. batchId nulo, coordenadas inválidas)."),
             @ApiResponse(responseCode = "403", description = "No autorizado.")
     })
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
-    public ResponseEntity<UUID> registerStep(@Valid @RequestBody RegisterStepResource resource,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UUID> registerStep(
+            @Valid @RequestPart("event") RegisterStepResource resource, // El JSON viene como una parte
+            @RequestPart(value = "file", required = false) MultipartFile file, // El fichero es otra parte (opcional)
+            @AuthenticationPrincipal UserDetails userDetails) {
         // 1. Crear el comando usando el Assembler, ahora con el actorId
-        var command = RegisterTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(resource, userDetails.userId());
+        var command = RegisterTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(resource, userDetails.userId(), file);
 
         // 2. Delegar al servicio de aplicación
         var eventId = traceabilityCommandService.handle(command);

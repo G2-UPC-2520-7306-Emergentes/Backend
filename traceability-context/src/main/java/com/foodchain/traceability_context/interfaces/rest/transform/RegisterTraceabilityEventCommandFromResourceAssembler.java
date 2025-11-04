@@ -3,6 +3,8 @@ package com.foodchain.traceability_context.interfaces.rest.transform;
 
 import com.foodchain.traceability_context.domain.model.commands.RegisterTraceabilityEventCommand;
 import com.foodchain.traceability_context.interfaces.rest.resources.RegisterStepResource;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.UUID;
 
 public class RegisterTraceabilityEventCommandFromResourceAssembler {
@@ -12,13 +14,14 @@ public class RegisterTraceabilityEventCommandFromResourceAssembler {
      * @param actorId El ID del usuario autenticado, extraído del token JWT.
      * @return El comando listo para ser procesado por la capa de aplicación.
      */
-    public static RegisterTraceabilityEventCommand toCommandFromResource(RegisterStepResource resource, UUID actorId) {
+    public static RegisterTraceabilityEventCommand toCommandFromResource(RegisterStepResource resource, UUID actorId, MultipartFile file) {
         return new RegisterTraceabilityEventCommand(
                 resource.batchId(),
                 resource.eventType(),
                 actorId,
                 resource.latitude(),
-                resource.longitude()
+                resource.longitude(),
+                file // Pasamos el fichero al comando
         );
     }
 }
