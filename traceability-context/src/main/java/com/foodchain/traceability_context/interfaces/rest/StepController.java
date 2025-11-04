@@ -2,10 +2,15 @@
 package com.foodchain.traceability_context.interfaces.rest;
 
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import com.foodchain.traceability_context.domain.model.queries.GetTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
+import com.foodchain.traceability_context.domain.services.TraceabilityQueryService;
 import com.foodchain.traceability_context.interfaces.rest.resources.RegisterStepResource;
+import com.foodchain.traceability_context.interfaces.rest.resources.TraceabilityEventResource;
 import com.foodchain.traceability_context.interfaces.rest.transform.RegisterTraceabilityEventCommandFromResourceAssembler;
+import com.foodchain.traceability_context.interfaces.rest.transform.TraceabilityEventResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +22,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/trace/events")
@@ -25,9 +32,11 @@ import java.util.UUID;
 public class StepController {
 
     private final TraceabilityCommandService traceabilityCommandService;
+    private final TraceabilityQueryService traceabilityQueryService;
 
-    public StepController(TraceabilityCommandService traceabilityCommandService) {
+    public StepController(TraceabilityCommandService traceabilityCommandService, TraceabilityQueryService traceabilityQueryService) {
         this.traceabilityCommandService = traceabilityCommandService;
+        this.traceabilityQueryService = traceabilityQueryService;
     }
 
     @Operation(
@@ -64,5 +73,21 @@ public class StepController {
         var eventId = traceabilityCommandService.handle(command);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(eventId);
+    }
+
+    @Operation(summary = "Obtener el historial de un lote", description = "Devuelve la lista completa de eventos de trazabilidad para un lote específico, ordenados por fecha.")
+    @ApiResponses()
+    @GetMapping("/batch/{batchId}")
+    @PreAuthorize("isAuthenticated()") // La autorización de propiedad se hace en la capa de aplicación
+    public ResponseEntity<List<TraceabilityEventResource>> getEventsByBatch(
+            @Parameter(description = "ID del lote a consultar") @PathVariable UUID batchId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        var query = new GetTraceabilityEventsByBatchIdQuery(batchId, userDetails.enterpriseId());
+        var events = traceabilityQueryService.handle(query);
+        var resources = events.stream()
+                .map(TraceabilityEventResourceFromEntityAssembler::toResourceFromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(resources);
     }
 }

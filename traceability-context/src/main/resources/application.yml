@@ -1,31 +1,44 @@
 server:
-  port: 8083 # Puerto Único para este microservicio
+  port: 8083
 
 spring:
   application:
     name: traceability-context
 
+  # --- PERFIL POR DEFECTO (local) ---
+  config:
+    activate:
+      on-profile: "default"
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/traceability_db # CONECTA A SU PROPIA BASE DE DATOS!
+    url: jdbc:mysql://127.0.0.1:3307/traceability_db
     username: foodchain_user
     password: foodchain_password
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  # --- CONFIGURACIÓN PARA EL PRODUCTOR DE MENSAJES ---
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: foodchain
     password: foodchain
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
+# URLs para clientes API en entorno local
 api:
-  clients:
-    iam-service:
-      base-url: "http://localhost:8081/api/v1/iam/auth"
+    clients:
+      iam-service:
+        base-url: "http://localhost:8081/api/v1/iam/auth"
+      batch-service:
+        base-url: "http://localhost:8082/api/v1/batches"
+
+---
+# --- PERFIL DOCKER ---
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  rabbitmq:
+    host: rabbitmq # En Docker, nos conectamos por el nombre del servicio
 
 openapi:
   service:

@@ -10,7 +10,6 @@ import java.util.UUID;
 @Embeddable
 public class BatchId implements Serializable {
     UUID value;
-
     public BatchId() {
         this.value = UUID.randomUUID();
     }

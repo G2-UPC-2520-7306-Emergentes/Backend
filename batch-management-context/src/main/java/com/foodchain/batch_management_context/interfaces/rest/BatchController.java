@@ -2,6 +2,8 @@
 package com.foodchain.batch_management_context.interfaces.rest;
 
 import com.foodchain.batch_management_context.domain.model.commands.*;
+import com.foodchain.batch_management_context.domain.model.queries.GetBatchByIdQuery;
+import com.foodchain.batch_management_context.interfaces.rest.resources.BatchOwnerResource;
 import com.foodchain.batch_management_context.interfaces.rest.resources.EditBatchResource;
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;
 import com.foodchain.batch_management_context.domain.services.BatchCommandService;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -145,5 +148,22 @@ public class BatchController {
         var command = new CloseBatchCommand(batchId, userDetails.enterpriseId());
         batchCommandService.handle(command);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint interno para que otros servicios verifiquen la propiedad de un lote.
+     * Es crucial para la autorización entre microservicios.
+     */
+    @GetMapping("/{batchId}/owner")
+    @PreAuthorize("isAuthenticated()") // Debe ser llamado por otro servicio autenticado
+    public ResponseEntity<BatchOwnerResource> getBatchOwner(
+            @Parameter(description = "ID del lote a consultar") @PathVariable UUID batchId) {
+
+        var uuid = new BatchId(batchId);
+        var query = new GetBatchByIdQuery(uuid);
+        var batch = batchQueryService.handle(query)
+                .orElseThrow(() -> new EntityNotFoundException("Lote no encontrado"));
+
+        return ResponseEntity.ok(new BatchOwnerResource(batch.getEnterpriseId()));
     }
 }

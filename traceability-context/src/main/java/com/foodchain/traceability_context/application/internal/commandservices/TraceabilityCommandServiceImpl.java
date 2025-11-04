@@ -13,6 +13,7 @@ import com.foodchain.traceability_context.domain.repository.TraceabilityReposito
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.UUID;
 
 @Service
@@ -31,7 +32,7 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
         this.geocodingService = g;
         this.hashingService = h;
         this.fileStorageService = f;
-    }
+        }
 
     @Override
     @Transactional

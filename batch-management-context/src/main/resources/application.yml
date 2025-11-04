@@ -1,35 +1,49 @@
 server:
-  port: 8082 # Puerto único para este microservicio
+  port: 8082
 
 spring:
   application:
     name: batch-management-context
 
+  # --- PERFIL POR DEFECTO (para ejecución local en IntelliJ) ---
+  config:
+    activate:
+      on-profile: "default"
   datasource:
     url: jdbc:mysql://127.0.0.1:3307/batch_management_db
     username: foodchain_user
     password: foodchain_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: foodchain
     password: foodchain
 
-api:
-  clients:
-    iam-service:
-      base-url: "http://localhost:8081/api/v1/iam/auth" # URL base para el servicio de identidad
+  # URLs para clientes API en entorno local
+  api:
+    clients:
+      iam-service:
+        base-url: "http://localhost:8081/api/v1/iam/auth"
+      # Añadimos el de trazabilidad aquí para cuando lo necesitemos
+      traceability-service:
+        base-url: "http://localhost:8083/api/v1/trace/events"
 
+---
+# --- PERFIL DOCKER (se activa cuando se corre en un contenedor) ---
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  # En Docker, la URL de la base de datos se proporciona como una variable de entorno
+  # y los valores de api.clients... también se proporcionan como variables de entorno.
+  # No necesitamos poner nada más aquí, Spring los recogerá automáticamente.
+
+---
+# --- CONFIGURACIÓN PARA LA DOCUMENTACIÓN OPENAPI ---
 openapi:
   service:
     title: "FoodChain - Batch Management Service API"

@@ -1,7 +1,4 @@
 ﻿# Este archivo orquesta el lanzamiento del ecosistema completo de FoodChain.
-# Se espera que cada servicio tenga su propio Dockerfile en su carpeta raíz.
-# Flujo de trabajo: 1. mvn clean install -DskipTests  2. docker-compose up --build
-
 services:
   # -------------------------------------------------
   # --- INFRAESTRUCTURA DE TERCEROS ---
@@ -13,7 +10,7 @@ services:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: identity_db
+      MYSQL_DATABASE: identity_db # Solo crea la primera, el script crea las demás
       MYSQL_USER: foodchain_user
       MYSQL_PASSWORD: foodchain_password
     volumes:
@@ -44,10 +41,13 @@ services:
   # --- NUESTROS MICROSERVICIOS ---
   # -------------------------------------------------
   api-gateway:
-    build: ./api-gateway # Busca el Dockerfile en la carpeta ./api-gateway
+    build: ./api-gateway
     container_name: api_gateway
     ports:
       - "8080:8080"
+    environment:
+      # Activamos el perfil docker para todos nuestros servicios
+      SPRING_PROFILES_ACTIVE: docker
     depends_on:
       identity-context:
         condition: service_started
@@ -62,7 +62,8 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/identity_db"
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/identity_db" # Conexión por nombre de servicio
     depends_on:
       mysql:
         condition: service_healthy
@@ -73,8 +74,12 @@ services:
     ports:
       - "8082:8082"
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/batch_management_db"
+      # Mapeo de variable de entorno a propiedad de Spring (api.clients.iam-service.base-url)
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
+      # Mapeo para la nueva dependencia (api.clients.traceability-service.base-url)
+      API_CLIENTS_TRACEABILITY-SERVICE_BASE-URL: "http://traceability-context:8083/api/v1/trace/events"
     depends_on:
       mysql:
         condition: service_healthy
@@ -87,9 +92,11 @@ services:
     ports:
       - "8083:8083"
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
+      API_CLIENTS_BATCH-SERVICE_BASE-URL: "http://batch-management-context:8082/api/v1/batches"
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
-      SPRING_RABBITMQ_HOST: "rabbitmq"
+      # En Docker, Spring AMQP usará el host 'rabbitmq' definido en el perfil 'docker'
     depends_on:
       mysql:
         condition: service_healthy
@@ -102,8 +109,8 @@ services:
     build: ./blockchain-worker-context
     container_name: blockchain_worker_context
     environment:
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
-      SPRING_RABBITMQ_HOST: "rabbitmq"
       BLOCKCHAIN_RPC-URL: "https://polygon-amoy.g.alchemy.com/v2/jPZqucxKewq9HbUPOZd09"
       BLOCKCHAIN_CONTRACT-ADDRESS: "0x9565726b49C383c0047c78C1405894a95C74E7c8"
       BLOCKCHAIN_PRIVATE-KEY: "0abd9a693bb03ebf7f6a9fb4717a4fc6bb620c7dfaf38d36708a5a1bba9227b3"
