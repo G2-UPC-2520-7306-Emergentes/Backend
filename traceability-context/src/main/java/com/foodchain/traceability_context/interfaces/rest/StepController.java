@@ -108,9 +108,9 @@ public class StepController {
 
         var command = CorrectTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(
                 originalEventId, resource, userDetails.userId(), file);
-
         var correctedEvent = traceabilityCommandService.handle(command);
 
+        // También usamos la versión simple aquí.
         var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(correctedEvent);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(eventResource);

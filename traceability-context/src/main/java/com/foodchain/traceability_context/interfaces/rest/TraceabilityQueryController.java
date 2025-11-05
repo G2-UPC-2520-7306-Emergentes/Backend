@@ -2,6 +2,8 @@
 package com.foodchain.traceability_context.interfaces.rest;
 
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import com.foodchain.traceability_context.application.outbound.iam.UserQueryService;
+import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.domain.model.queries.GetPublicTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.model.queries.GetTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.services.TraceabilityQueryService;
@@ -28,9 +30,11 @@ import java.util.stream.Collectors;
 public class TraceabilityQueryController {
 
     private final TraceabilityQueryService traceabilityQueryService;
+    private final UserQueryService userQueryService;
 
-    public TraceabilityQueryController(TraceabilityQueryService traceabilityQueryService) {
+    public TraceabilityQueryController(TraceabilityQueryService traceabilityQueryService, UserQueryService userQueryService) {
         this.traceabilityQueryService = traceabilityQueryService;
+        this.userQueryService = userQueryService;
     }
 
     /**
@@ -63,8 +67,11 @@ public class TraceabilityQueryController {
         // La lógica de negocio para verificar el estado del lote irá en el QueryService
         var query = new GetPublicTraceabilityEventsByBatchIdQuery(batchId);
         var events = traceabilityQueryService.handle(query);
+        var actorIds = events.stream().map(TraceabilityEvent::getActorId).distinct().toList();
+        var actorNames = userQueryService.getUsernamesForIds(actorIds); // El controlador orquesta
+
         var resources = events.stream()
-                .map(TraceabilityEventResourceFromEntityAssembler::toResourceFromEntity)
+                .map(event -> TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(event, actorNames.get(event.getActorId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(resources);
     }

@@ -13,6 +13,7 @@ public record TraceabilityEventResource(
         String eventType,
         Date eventDate,
         UUID actorId,
+        String actorName,
         LocationResource location,
         String blockchainStatus,
         String transactionHash, // Será nulo al principio
