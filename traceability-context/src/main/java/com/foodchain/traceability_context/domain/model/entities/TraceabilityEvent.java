@@ -44,14 +44,17 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
     @Column(nullable = false)
     private BlockchainStatus blockchainStatus;
 
-    @Column(unique = true) // El hash de la transacción debe ser único
-    private String transactionHash;
-
     @Column
     private String proofImageUrl; // URL donde se almacena la imagen
 
     @Column
     private String proofImageHash; // Hash SHA-256 del contenido de la imagen
+
+    @Column
+    private UUID correctedEventId;
+
+    @Column(columnDefinition = "TEXT")
+    private String justification;
 
     /**
      * Constructor privado. La creación se fuerza a través del factory method.
@@ -79,26 +82,18 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
     }
 
     /**
-     * METODO DE NEGOCIO: Confirma que el evento ha sido anclado en la blockchain.
+     * FACTORY METHOD: Punto de entrada para crear un EVENTO DE CORRECCIÓN.
      */
-    public void confirmAnchoring(String transactionHash) {
-        if (this.blockchainStatus != BlockchainStatus.PENDING) {
-            throw new IllegalStateException("Cannot confirm anchoring on an event that is not in PENDING state.");
+    public static TraceabilityEvent recordCorrection(UUID originalEventId, UUID batchId, UUID actorId, Location location, String justification, String proofImageUrl, String proofImageHash) {
+        if (originalEventId == null || justification == null || justification.isBlank()) {
+            throw new IllegalArgumentException("Se requiere el ID del evento original y una justificación para la corrección.");
         }
-        if (transactionHash == null || transactionHash.isBlank()) {
-            throw new IllegalArgumentException("Transaction hash cannot be null or empty.");
-        }
-        this.transactionHash = transactionHash;
-        this.blockchainStatus = BlockchainStatus.CONFIRMED;
-    }
 
-    /**
-     * METODO DE NEGOCIO: Marca el anclaje como fallido.
-     */
-    public void markAsFailed() {
-        if (this.blockchainStatus != BlockchainStatus.PENDING) {
-            throw new IllegalStateException("Cannot mark as failed an event that is not in PENDING state.");
-        }
-        this.blockchainStatus = BlockchainStatus.FAILED;
+        // Creamos un evento normal, pero con los campos de corrección llenos.
+        var correctionEvent = new TraceabilityEvent(batchId, "CORRECTION", actorId, location, proofImageUrl, proofImageHash);
+        correctionEvent.correctedEventId = originalEventId;
+        correctionEvent.justification = justification;
+
+        return correctionEvent;
     }
 }

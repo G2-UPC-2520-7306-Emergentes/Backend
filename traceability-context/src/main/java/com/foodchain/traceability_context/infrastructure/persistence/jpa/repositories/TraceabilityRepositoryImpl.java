@@ -11,23 +11,23 @@ import java.util.UUID;
 @Component
 public class TraceabilityRepositoryImpl implements TraceabilityRepository {
     private final TraceabilityJpaRepository jpaRepository;
-
     public TraceabilityRepositoryImpl(TraceabilityJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
-
     @Override
     public void save(TraceabilityEvent event) {
         jpaRepository.save(event);
     }
-
     @Override
     public Optional<TraceabilityEvent> findById(UUID id) {
         return jpaRepository.findById(id);
     }
-
     @Override
     public List<TraceabilityEvent> findByBatchId(UUID batchId) {
         return jpaRepository.findByBatchId(batchId);
+    }
+    @Override
+    public Optional<TraceabilityEvent> findLatestByBatchId(UUID batchId) {
+        return jpaRepository.findTopByBatchIdOrderByEventDateDesc(batchId);
     }
 }

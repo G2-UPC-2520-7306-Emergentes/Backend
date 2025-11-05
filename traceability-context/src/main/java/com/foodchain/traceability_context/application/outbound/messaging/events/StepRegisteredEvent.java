@@ -17,6 +17,7 @@ import java.util.UUID;
  * @param eventDate La fecha y hora en que se registró el evento.
  * @param actorId El ID del usuario que realizó el registro.
  * @param location Un objeto que contiene la latitud y longitud del evento.
+ * @param proofImageUrl La URL donde se almacena la imagen de prueba asociada al evento.
  */
 public record StepRegisteredEvent(
         UUID eventId,
@@ -24,7 +25,8 @@ public record StepRegisteredEvent(
         String eventType,
         Date eventDate,
         UUID actorId,
-        LocationDTO location
+        LocationDTO location,
+        String proofImageUrl
 ) implements Serializable { // Es una buena práctica que los DTOs de eventos sean serializables
 
     /**

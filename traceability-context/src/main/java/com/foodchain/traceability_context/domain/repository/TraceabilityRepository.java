@@ -10,4 +10,5 @@ public interface TraceabilityRepository {
     void save(TraceabilityEvent event);
     Optional<TraceabilityEvent> findById(UUID id);
     List<TraceabilityEvent> findByBatchId(UUID batchId);
+    Optional<TraceabilityEvent> findLatestByBatchId(UUID batchId);
 }

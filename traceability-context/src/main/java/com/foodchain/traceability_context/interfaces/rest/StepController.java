@@ -5,8 +5,10 @@ import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
 import com.foodchain.traceability_context.domain.model.queries.GetTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
 import com.foodchain.traceability_context.domain.services.TraceabilityQueryService;
+import com.foodchain.traceability_context.interfaces.rest.resources.CorrectStepResource;
 import com.foodchain.traceability_context.interfaces.rest.resources.RegisterStepResource;
 import com.foodchain.traceability_context.interfaces.rest.resources.TraceabilityEventResource;
+import com.foodchain.traceability_context.interfaces.rest.transform.CorrectTraceabilityEventCommandFromResourceAssembler;
 import com.foodchain.traceability_context.interfaces.rest.transform.RegisterTraceabilityEventCommandFromResourceAssembler;
 import com.foodchain.traceability_context.interfaces.rest.transform.TraceabilityEventResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,5 +91,22 @@ public class StepController {
                 .map(TraceabilityEventResourceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(resources);
+    }
+
+    @PostMapping(path = "/{originalEventId}/correction", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('ENTERPRISE_ADMIN')") // ¡Solo un admin puede corregir!
+    public ResponseEntity<UUID> correctStep(
+            @Parameter(description = "ID del evento original a corregir") @PathVariable UUID originalEventId,
+            @Valid @RequestPart("correction") CorrectStepResource resource,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        var command = CorrectTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(
+                originalEventId, resource, userDetails.userId(), file
+        );
+
+        var newEventId = traceabilityCommandService.handle(command);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(newEventId);
     }
 }
