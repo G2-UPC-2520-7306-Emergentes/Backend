@@ -5,15 +5,29 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * DTO que representa un único evento de trazabilidad para la respuesta de la API.
+ * DTO para representar un evento de trazabilidad en las respuestas de la API.
  */
 public record TraceabilityEventResource(
-        UUID eventId,
+        UUID id,
+        UUID batchId,
         String eventType,
         Date eventDate,
         UUID actorId,
-        Double latitude,
-        Double longitude,
+        LocationResource location,
         String blockchainStatus,
-        String transactionHash
-) {}
+        String transactionHash, // Será nulo al principio
+        String proofImageUrl,
+        String proofImageHash
+) {
+    /**
+     * DTO anidado para la ubicación.
+     */
+    public record LocationResource(
+            Double latitude,
+            Double longitude,
+            String address,
+            String city,
+            String region,
+            String country
+    ) {}
+}

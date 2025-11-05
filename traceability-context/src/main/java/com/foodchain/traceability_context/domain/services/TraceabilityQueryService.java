@@ -3,6 +3,7 @@ package com.foodchain.traceability_context.domain.services;
 
 import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.domain.model.queries.GetHistoryByBatchIdQuery;
+import com.foodchain.traceability_context.domain.model.queries.GetPublicTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.model.queries.GetTraceabilityEventsByBatchIdQuery;
 
 import java.util.List;
@@ -10,6 +11,5 @@ import java.util.List;
 public interface TraceabilityQueryService {
     List<TraceabilityEvent> handle(GetHistoryByBatchIdQuery query);
     List<TraceabilityEvent> handle(GetTraceabilityEventsByBatchIdQuery query);
-
-
+    List<TraceabilityEvent> handle(GetPublicTraceabilityEventsByBatchIdQuery query);
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,5 +42,21 @@ public class BatchQueryServiceImpl implements BatchQueryService {
         }
     }
 
+    @Override
+    public Optional<String> getBatchStatus(UUID batchId) {
+        try {
+            String url = batchServiceUrl + "/" + batchId + "/status";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return Optional.of(response.getBody());
+            }
+            return Optional.empty();
+        } catch (HttpClientErrorException.NotFound e) {
+            return Optional.empty(); // El lote no existe
+        } catch (Exception e) {
+            System.err.println("Error al obtener el estado del lote: " + e.getMessage());
+            return Optional.empty(); // Por seguridad, devolvemos vacío en caso de error.
+        }
+    }
 
 }

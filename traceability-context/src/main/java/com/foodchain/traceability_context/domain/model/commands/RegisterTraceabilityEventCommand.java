@@ -4,6 +4,7 @@ package com.foodchain.traceability_context.domain.model.commands;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
+import java.util.Date; // ¡Añadimos Date!
 
 /**
  * Comando para registrar un nuevo evento de trazabilidad para un lote existente.
@@ -20,5 +21,6 @@ public record RegisterTraceabilityEventCommand(
         UUID actorId,
         Double latitude,
         Double longitude,
-        MultipartFile proofImageFile
+        MultipartFile proofImageFile,
+        Date clientCreatedAt // ¡NUEVO CAMPO! Puede ser nulo.
 ) {}

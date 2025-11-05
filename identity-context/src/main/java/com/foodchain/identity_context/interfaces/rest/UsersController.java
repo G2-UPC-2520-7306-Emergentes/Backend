@@ -4,12 +4,15 @@ package com.foodchain.identity_context.interfaces.rest;
 import com.foodchain.identity_context.domain.model.commands.AssignUserRoleCommand;
 import com.foodchain.identity_context.domain.model.queries.GetAllUsersByEnterpriseIdQuery;
 import com.foodchain.identity_context.domain.model.queries.GetUserByEmailQuery;
+import com.foodchain.identity_context.domain.model.queries.GetUsersByIdsQuery;
 import com.foodchain.identity_context.domain.services.UserCommandService;
 import com.foodchain.identity_context.domain.services.UserQueryService;
 import com.foodchain.identity_context.interfaces.rest.resources.AssignRoleResource;
+import com.foodchain.identity_context.interfaces.rest.resources.UserBatchDetailsResource;
 import com.foodchain.identity_context.interfaces.rest.resources.UserResource;
 import com.foodchain.identity_context.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -82,5 +85,17 @@ public class UsersController {
         var command = new AssignUserRoleCommand(userId, resource.roleName());
         userCommandService.handle(command);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Obtener detalles de múltiples usuarios por ID", description = "Endpoint de sistema para que otros microservicios resuelvan IDs de usuario a detalles básicos. Acepta una lista de UUIDs.")
+    @PostMapping("/batch-details")
+    @PreAuthorize("isAuthenticated()") // Asumimos que solo otros servicios autenticados pueden llamar
+    public ResponseEntity<List<UserBatchDetailsResource>> getUsersBatchDetails(@RequestBody List<UUID> userIds) {
+        var query = new GetUsersByIdsQuery(userIds);
+        var users = userQueryService.handle(query);
+        var resources = users.stream()
+                .map(user -> new UserBatchDetailsResource(user.getId(), user.getEmail())) // Mapeo simple
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(resources);
     }
 }

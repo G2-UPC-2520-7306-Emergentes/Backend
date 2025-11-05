@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Service
 public class TraceabilityCommandServiceImpl implements TraceabilityCommandService {
@@ -39,7 +38,7 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
 
     @Override
     @Transactional
-    public UUID handle(RegisterTraceabilityEventCommand command) {
+    public TraceabilityEvent handle(RegisterTraceabilityEventCommand command) {
 
         traceabilityRepository.findLatestByBatchId(command.batchId()).ifPresent(latestEvent -> {
             // Creamos una fecha "ahora" para comparar. Será muy cercana a la que se creará en la entidad.
@@ -68,7 +67,7 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
 
         // 2. Crear la entidad de dominio con la ubicación ya enriquecida
         var event = TraceabilityEvent.record(command.batchId(), command.eventType(), command.actorId(),
-                enrichedLocation, proofImageUrl, proofImageHash);
+                enrichedLocation, proofImageUrl, proofImageHash, command.clientCreatedAt());
 
         // 3. Guardar en la base de datos
         traceabilityRepository.save(event);
@@ -76,12 +75,12 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
         // 4. Crear y publicar el evento para RabbitMQ
         eventPublisher.publish(mapToStepRegisteredEvent(event));
 
-        return event.getId();
+        return event; // ¡Devolvemos la entidad completa!
     }
 
     @Override
     @Transactional
-    public UUID handle(CorrectTraceabilityEventCommand command) {
+    public TraceabilityEvent handle(CorrectTraceabilityEventCommand command) {
 
         // 1. Validar que el evento original existe
         var originalEvent = traceabilityRepository.findById(command.originalEventId())
@@ -116,7 +115,7 @@ public class TraceabilityCommandServiceImpl implements TraceabilityCommandServic
         // (La lógica para crear el StepRegisteredEvent DTO es la misma que para un evento normal)
         eventPublisher.publish(mapToStepRegisteredEvent(correctionEvent));
 
-        return correctionEvent.getId();
+        return correctionEvent; // ¡Devolvemos la entidad completa!
     }
 
     /**

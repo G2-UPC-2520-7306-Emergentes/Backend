@@ -64,17 +64,22 @@ public class StepController {
     })
     @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasRole('ENTERPRISE_USER') or hasRole('ENTERPRISE_ADMIN')")
-    public ResponseEntity<UUID> registerStep(
-            @Valid @RequestPart("event") RegisterStepResource resource, // El JSON viene como una parte
-            @RequestPart(value = "file", required = false) MultipartFile file, // El fichero es otra parte (opcional)
+    public ResponseEntity<TraceabilityEventResource> registerStep(
+            @Valid @RequestPart("event") RegisterStepResource resource,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal UserDetails userDetails) {
+
         // 1. Crear el comando usando el Assembler, ahora con el actorId
         var command = RegisterTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(resource, userDetails.userId(), file);
 
-        // 2. Delegar al servicio de aplicación
-        var eventId = traceabilityCommandService.handle(command);
+        // 2.  El servicio ahora devuelve la entidad completa
+        var newEvent = traceabilityCommandService.handle(command);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventId);
+        // 3. La convertimos al recurso de la API
+        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(newEvent);
+
+        // 4. Devolvemos 201 Created con el recurso completo en el cuerpo
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventResource);
     }
 
     @Operation(summary = "Obtener el historial de un lote", description = "Devuelve la lista completa de eventos de trazabilidad para un lote específico, ordenados por fecha.")
@@ -95,18 +100,19 @@ public class StepController {
 
     @PostMapping(path = "/{originalEventId}/correction", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('ENTERPRISE_ADMIN')") // ¡Solo un admin puede corregir!
-    public ResponseEntity<UUID> correctStep(
+    public ResponseEntity<TraceabilityEventResource> correctStep(
             @Parameter(description = "ID del evento original a corregir") @PathVariable UUID originalEventId,
             @Valid @RequestPart("correction") CorrectStepResource resource,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         var command = CorrectTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(
-                originalEventId, resource, userDetails.userId(), file
-        );
+                originalEventId, resource, userDetails.userId(), file);
 
-        var newEventId = traceabilityCommandService.handle(command);
+        var correctedEvent = traceabilityCommandService.handle(command);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(newEventId);
+        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(correctedEvent);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventResource);
     }
 }

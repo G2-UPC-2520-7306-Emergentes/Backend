@@ -1,18 +1,32 @@
-﻿package com.foodchain.traceability_context.interfaces.rest.transform;
+﻿// interfaces/rest/transform/TraceabilityEventResourceFromEntityAssembler.java
+package com.foodchain.traceability_context.interfaces.rest.transform;
 
+import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.interfaces.rest.resources.TraceabilityEventResource;
 
 public class TraceabilityEventResourceFromEntityAssembler {
-    public static TraceabilityEventResource toResourceFromEntity(com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent event) {
+
+    public static TraceabilityEventResource toResourceFromEntity(TraceabilityEvent entity) {
+        var locationResource = new TraceabilityEventResource.LocationResource(
+                entity.getLocation().getLatitude(),
+                entity.getLocation().getLongitude(),
+                entity.getLocation().getAddress(),
+                entity.getLocation().getCity(),
+                entity.getLocation().getRegion(),
+                entity.getLocation().getCountry()
+        );
+
         return new TraceabilityEventResource(
-                event.getId(),
-                event.getEventType(),
-                event.getEventDate(),
-                event.getActorId(),
-                event.getLocation().getLatitude(),
-                event.getLocation().getLongitude(),
-                event.getBlockchainStatus().name(), // Convertimos el enum a String
-                event.getTransactionHash()
+                entity.getId(),
+                entity.getBatchId(),
+                entity.getEventType(),
+                entity.getEventDate(),
+                entity.getActorId(),
+                locationResource,
+                entity.getBlockchainStatus().name(),
+                entity.getTransactionHash(),
+                entity.getProofImageUrl(),
+                entity.getProofImageHash()
         );
     }
 }

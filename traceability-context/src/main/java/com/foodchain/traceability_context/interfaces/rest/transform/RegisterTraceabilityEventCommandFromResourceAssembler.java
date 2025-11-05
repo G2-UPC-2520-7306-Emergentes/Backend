@@ -7,21 +7,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
-public class RegisterTraceabilityEventCommandFromResourceAssembler {
-    /**
-     * Traduce el DTO de recurso a un Comando de dominio.
-     * @param resource El DTO de la petición.
-     * @param actorId El ID del usuario autenticado, extraído del token JWT.
-     * @return El comando listo para ser procesado por la capa de aplicación.
-     */
-    public static RegisterTraceabilityEventCommand toCommandFromResource(RegisterStepResource resource, UUID actorId, MultipartFile file) {
-        return new RegisterTraceabilityEventCommand(
-                resource.batchId(),
-                resource.eventType(),
-                actorId,
-                resource.latitude(),
-                resource.longitude(),
-                file // Pasamos el fichero al comando
-        );
+    public class RegisterTraceabilityEventCommandFromResourceAssembler {
+        /**
+         * Traduce el DTO de recurso a un Comando de dominio.
+         *
+         * @param resource El DTO de la petición.
+         * @param actorId  El ID del usuario autenticado, extraído del token JWT.
+         * @return El comando listo para ser procesado por la capa de aplicación.
+         */
+        public static RegisterTraceabilityEventCommand toCommandFromResource(RegisterStepResource resource, UUID actorId, MultipartFile file) {
+            return new RegisterTraceabilityEventCommand(
+                    resource.batchId(),
+                    resource.eventType(),
+                    actorId,
+                    resource.latitude(),
+                    resource.longitude(),
+                    file,
+                    resource.clientCreatedAt() // Pasamos el nuevo campo
+            );
+        }
     }
-}

@@ -44,6 +44,9 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
     @Column(nullable = false)
     private BlockchainStatus blockchainStatus;
 
+    @Column(unique = true) // El hash de la transacción debe ser único
+    private String transactionHash;
+
     @Column
     private String proofImageUrl; // URL donde se almacena la imagen
 
@@ -55,6 +58,10 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
 
     @Column(columnDefinition = "TEXT")
     private String justification;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date clientCreatedAt; // El timestamp de cuando el cliente creó el borrador. Puede ser nulo.
 
     /**
      * Constructor privado. La creación se fuerza a través del factory method.
@@ -72,13 +79,16 @@ public class TraceabilityEvent extends AuditableAbstractAggregateRoot<Traceabili
     }
 
     /**
-     * FACTORY METHOD actualizado.
+     * FACTORY METHOD actualizado para incluir el timestamp del cliente.
      */
-    public static TraceabilityEvent record(UUID batchId, String eventType, UUID actorId, Location location, String proofImageUrl, String proofImageHash) {
+    public static TraceabilityEvent record(UUID batchId, String eventType, UUID actorId, Location location,
+                                           String proofImageUrl, String proofImageHash, Date clientCreatedAt) {
         if (batchId == null || eventType == null || eventType.isBlank() || actorId == null || location == null) {
             throw new IllegalArgumentException("Todos los campos básicos son requeridos para registrar un evento.");
         }
-        return new TraceabilityEvent(batchId, eventType, actorId, location, proofImageUrl, proofImageHash);
+        var event = new TraceabilityEvent(batchId, eventType, actorId, location, proofImageUrl, proofImageHash);
+        event.clientCreatedAt = clientCreatedAt; // Asignamos el timestamp del cliente
+        return event;
     }
 
     /**
