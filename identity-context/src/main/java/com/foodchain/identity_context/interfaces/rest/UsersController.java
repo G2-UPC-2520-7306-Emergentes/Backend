@@ -12,7 +12,6 @@ import com.foodchain.identity_context.interfaces.rest.resources.UserBatchDetails
 import com.foodchain.identity_context.interfaces.rest.resources.UserResource;
 import com.foodchain.identity_context.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -87,14 +86,18 @@ public class UsersController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Obtener detalles de múltiples usuarios por ID", description = "Endpoint de sistema para que otros microservicios resuelvan IDs de usuario a detalles básicos. Acepta una lista de UUIDs.")
     @PostMapping("/batch-details")
-    @PreAuthorize("isAuthenticated()") // Asumimos que solo otros servicios autenticados pueden llamar
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UserBatchDetailsResource>> getUsersBatchDetails(@RequestBody List<UUID> userIds) {
         var query = new GetUsersByIdsQuery(userIds);
         var users = userQueryService.handle(query);
         var resources = users.stream()
-                .map(user -> new UserBatchDetailsResource(user.getId(), user.getEmail())) // Mapeo simple
+                .map(user -> new UserBatchDetailsResource(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getEnterpriseId(),
+                        user.getRoleStrings() // Usamos el método que convierte los roles a Set<String>
+                ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(resources);
     }

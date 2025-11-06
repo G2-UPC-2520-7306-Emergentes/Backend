@@ -1,13 +1,13 @@
 ﻿// EN: traceability-context/src/main/java/com/foodchain/traceability_context/interfaces/rest/transform/TraceabilityEventResourceFromEntityAssembler.java
 package com.foodchain.traceability_context.interfaces.rest.transform;
 
+import com.foodchain.traceability_context.application.outbound.iam.EnterpriseResource;
 import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.interfaces.rest.resources.TraceabilityEventResource;
 
 /**
  * Assembler (o Mapper) responsable de convertir la entidad de dominio `TraceabilityEvent`
  * en el DTO de recurso `TraceabilityEventResource` que se expone en la API.
- *
  * Esta clase desacopla la representación interna del dominio de la representación pública de la API.
  */
 public class TraceabilityEventResourceFromEntityAssembler {
@@ -21,8 +21,8 @@ public class TraceabilityEventResourceFromEntityAssembler {
      * @param txUrlTemplate La plantilla de URL para el explorador de blockchain (ej. "https://explorer.com/tx/{txHash}").
      * @return El DTO `TraceabilityEventResource` listo para ser serializado a JSON.
      */
-    public static TraceabilityEventResource toResourceFromEntity(TraceabilityEvent entity, String actorName, String txUrlTemplate) {
-
+    public static TraceabilityEventResource toResourceFromEntity(TraceabilityEvent entity, String actorName,
+                                                                 EnterpriseResource enterprise, String txUrlTemplate) {
         // 1. Mapear el Value Object anidado `Location` a su DTO de recurso `LocationResource`.
         TraceabilityEventResource.LocationResource locationResource = null;
         if (entity.getLocation() != null) {
@@ -42,14 +42,24 @@ public class TraceabilityEventResourceFromEntityAssembler {
             verificationUrl = txUrlTemplate.replace("{txHash}", entity.getTransactionHash());
         }
 
+        // Mapeo del DTO de empresa
+        TraceabilityEventResource.EnterpriseInfoResource enterpriseInfo = null;
+        if (enterprise != null) {
+            enterpriseInfo = new TraceabilityEventResource.EnterpriseInfoResource(
+                    enterprise.enterpriseId(),
+                    enterprise.name(),
+                    enterprise.logoUrl()
+            );
+        }
+
         // 3. Construir el DTO de recurso principal con todos los datos.
         return new TraceabilityEventResource(
                 entity.getId(),
                 entity.getBatchId(),
                 entity.getEventType(),
                 entity.getEventDate(),
-                entity.getActorId(),
-                actorName != null ? actorName : "Información del actor no disponible", // Usar un valor por defecto si el nombre no se encuentra
+                actorName != null ? actorName : "Usuario Desconocido",
+                enterpriseInfo,
                 locationResource,
                 entity.getBlockchainStatus().name(),
                 entity.getTransactionHash(),

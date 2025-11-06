@@ -28,7 +28,7 @@ api:
     clients:
       iam-service:
         base-url: "http://localhost:8081/api/v1/iam/auth"
-        query-url: "http://localhost:8081/api/v1/iam"
+        enterprise-url: "http://localhost:8081/api/v1/enterprises"
       batch-service:
         base-url: "http://localhost:8082/api/v1/batches"
 

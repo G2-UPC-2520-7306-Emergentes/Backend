@@ -1,7 +1,9 @@
-// EN: traceability-context/interfaces/rest/TraceabilityQueryController.java
+// EN: traceability-context/src/main/java/com/foodchain/traceability_context/interfaces/rest/TraceabilityQueryController.java
 package com.foodchain.traceability_context.interfaces.rest;
 
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
+import com.foodchain.traceability_context.application.outbound.iam.EnterpriseQueryService;
+import com.foodchain.traceability_context.application.outbound.iam.EnterpriseResource;
 import com.foodchain.traceability_context.application.outbound.iam.UserQueryService;
 import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.domain.model.queries.GetPublicTraceabilityEventsByBatchIdQuery;
@@ -13,6 +15,8 @@ import com.foodchain.traceability_context.interfaces.rest.transform.RoutePointRe
 import com.foodchain.traceability_context.interfaces.rest.transform.TraceabilityEventResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,138 +29,130 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 @RestController
-@RequestMapping("/api/v1/trace/history") // Usamos una nueva ruta base para las consultas
+@RequestMapping("/api/v1/trace/history")
 @Tag(name = "Traceability Queries", description = "API para la consulta pública y privada de historiales de trazabilidad.")
 public class TraceabilityQueryController {
 
     private final TraceabilityQueryService traceabilityQueryService;
     private final UserQueryService userQueryService;
+    private final EnterpriseQueryService enterpriseQueryService;
     private final String txUrlTemplate;
 
-    public TraceabilityQueryController(TraceabilityQueryService tqs, UserQueryService uqs,
+    public TraceabilityQueryController(TraceabilityQueryService tqs, UserQueryService uqs, EnterpriseQueryService eqs,
                                        @Value("${blockchain.explorer.tx-url-template}") String txUrlTemplate) {
         this.traceabilityQueryService = tqs;
         this.userQueryService = uqs;
+        this.enterpriseQueryService = eqs;
         this.txUrlTemplate = txUrlTemplate;
     }
-    /**
-     * Endpoint PRIVADO para que los actores de la cadena de suministro vean el historial.
-     * Requiere autenticación y verifica la propiedad del lote.
-     */
+
+    @Operation(summary = "Obtener historial de un lote (Privado)",
+            description = "Endpoint para actores de la cadena de suministro. Devuelve el historial paginado de un lote, verificando que el usuario autenticado pertenezca a la empresa propietaria del lote.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historial paginado recuperado exitosamente."),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado. El usuario no tiene permisos para ver este lote."),
+            @ApiResponse(responseCode = "404", description = "Lote no encontrado.")
+    })
     @GetMapping("/batch/{batchId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<TraceabilityEventResource>> getEventsForActor(
-            @PathVariable UUID batchId,
+            @Parameter(description = "ID del lote a consultar") @PathVariable UUID batchId,
             @AuthenticationPrincipal UserDetails userDetails,
-            Pageable pageable) { // Spring MVC crea este objeto a partir de los parámetros ?page=X&size=Y&sort=Z
+            Pageable pageable) {
 
         var query = new GetTraceabilityEventsByBatchIdQuery(batchId, userDetails.enterpriseId());
-        // El servicio ahora devuelve un Page de entidades
         var eventsPage = traceabilityQueryService.handle(query, pageable);
+        var resourcesPage = enrichEventsPage(eventsPage);
 
-        // Usamos el método 'map' de Page para convertir su contenido sin perder la información de paginación
-        var resourcesPage = eventsPage.map(event -> {
-            // La orquestación para enriquecer con nombres se hace aquí
-            String actorName = userQueryService.getUsernamesForIds(List.of(event.getActorId())).get(event.getActorId());
-            return TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(event, actorName, txUrlTemplate);
-        });
         return ResponseEntity.ok(resourcesPage);
     }
 
-
-    /**
-     * Endpoint PÚBLICO para que los consumidores finales vean el historial.
-     * NO requiere autenticación, pero SÍ valida que el lote esté en un estado público.
-     */
-    @Operation(summary = "Obtener el historial público de un lote", description = "Devuelve la lista de eventos para un lote específico. Solo funciona si el lote está en un estado público (ej. 'FOR_SALE' o 'CLOSED').")
+    @Operation(summary = "Obtener historial de un lote (Público)",
+            description = "Endpoint para consumidores finales. Devuelve el historial paginado de un lote. Solo funciona si el lote está en un estado público (ej. 'FOR_SALE' o 'CLOSED').")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historial paginado recuperado exitosamente."),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado. La información de trazabilidad para este lote aún no es pública."),
+            @ApiResponse(responseCode = "404", description = "Lote no encontrado.")
+    })
     @GetMapping("/public/batch/{batchId}")
     public ResponseEntity<Page<TraceabilityEventResource>> getPublicEvents(
-            @PathVariable UUID batchId,
+            @Parameter(description = "ID del lote escaneado en el código QR") @PathVariable UUID batchId,
             Pageable pageable) {
 
         var query = new GetPublicTraceabilityEventsByBatchIdQuery(batchId);
         var eventsPage = traceabilityQueryService.handle(query, pageable);
-
-        // Extraemos todos los IDs de la página actual para hacer una sola llamada de red
-        var actorIds = eventsPage.getContent().stream().map(TraceabilityEvent::getActorId).distinct().toList();
-        var actorNames = userQueryService.getUsernamesForIds(actorIds);
-
-        var resourcesPage = eventsPage.map(event -> TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(
-                event,
-                actorNames.get(event.getActorId()),
-                this.txUrlTemplate
-        ));
+        var resourcesPage = enrichEventsPage(eventsPage);
 
         return ResponseEntity.ok(resourcesPage);
     }
 
-    /**
-     * Método privado de orquestación para enriquecer una lista de eventos con los nombres de los actores.
-     */
-    private List<TraceabilityEventResource> enrichEventsWithActorNames(List<TraceabilityEvent> events) {
-        if (events == null || events.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 1. Extraer los IDs únicos de los actores
-        List<UUID> actorIds = events.stream()
-                .map(TraceabilityEvent::getActorId)
-                .distinct()
-                .toList();
-
-        // 2. Hacer UNA SOLA llamada de red para obtener todos los nombres
-        Map<UUID, String> actorNames = userQueryService.getUsernamesForIds(actorIds);
-
-        // 3. Mapear los eventos a recursos, usando la versión enriquecida del assembler
-        return events.stream()
-                .map(event -> TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(
-                        event,
-                        actorNames.get(event.getActorId()),
-                        this.txUrlTemplate // ¡Pasamos el template!
-                ))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Endpoint PÚBLICO para obtener solo los puntos geográficos de la ruta de un lote.
-     * Ideal para renderizar el mapa interactivo.
-     */
-    @Operation(summary = "Obtener la ruta geográfica de un lote", description = "Devuelve una lista ordenada de eventos que tienen coordenadas GPS, para dibujar el mapa del recorrido.")
+    @Operation(summary = "Obtener la ruta geográfica de un lote (Público)",
+            description = "Devuelve una lista COMPLETA y ordenada de todos los eventos que tienen coordenadas GPS, ideal para dibujar el mapa del recorrido. Aplica las mismas reglas de visibilidad pública que el historial.")
     @GetMapping("/public/batch/{batchId}/route")
-    public ResponseEntity<List<RoutePointResource>> getPublicRoute(
-            @Parameter(description = "ID del lote escaneado") @PathVariable UUID batchId) {
+    public ResponseEntity<List<RoutePointResource>> getPublicRoute(@PathVariable UUID batchId) {
 
-        // 1. Usamos la misma lógica de negocio para obtener los eventos de un lote público
         var query = new GetPublicTraceabilityEventsByBatchIdQuery(batchId);
+        // LLAMAMOS AL MÉTODO NO PAGINADO DEL SERVICIO
         var events = traceabilityQueryService.handle(query);
 
-        // 2. Extraemos los IDs de los actores para enriquecer los nombres
-        List<UUID> actorIds = events.stream()
-                .map(TraceabilityEvent::getActorId)
-                .distinct()
-                .toList();
-        Map<UUID, String> actorNames = userQueryService.getUsernamesForIds(actorIds);
+        if (events == null || events.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
 
-        // 3. Filtramos, mapeamos y ordenamos
+        // REUTILIZAMOS LA LÓGICA DE ENRIQUECIMIENTO
+        var actorIds = events.stream().map(TraceabilityEvent::getActorId).distinct().toList();
+        // Usamos el método correcto que devuelve UserDetails completos
+        var userDetailsMap = userQueryService.getUserDetailsForIds(actorIds);
+
         var routePoints = events.stream()
-                // Nos quedamos solo con los eventos que tienen una ubicación válida
-                .filter(event -> event.getLocation() != null && event.getLocation().getLatitude() != null && event.getLocation().getLongitude() != null)
-                // Ordenamos por fecha para que la línea del mapa sea coherente
+                .filter(event -> event.getLocation() != null && event.getLocation().getLatitude() != null)
                 .sorted(java.util.Comparator.comparing(TraceabilityEvent::getEventDate))
-                // Convertimos cada evento a nuestro DTO de punto de ruta
-                .map(event -> RoutePointResourceFromEntityAssembler.toResourceFromEntity(
-                        event,
-                        actorNames.get(event.getActorId())
-                ))
+                .map(event -> {
+                    UserDetails details = userDetailsMap.get(event.getActorId());
+                    String actorName = (details != null) ? details.email() : "Desconocido";
+                    return RoutePointResourceFromEntityAssembler.toResourceFromEntity(event, actorName);
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(routePoints);
+    }
+
+     /**
+     * Orquesta el enriquecimiento de una página de eventos con datos de otros microservicios.
+     * Realiza 2 llamadas de red eficientes (una para usuarios, una para empresas) por cada página.
+     */
+    private Page<TraceabilityEventResource> enrichEventsPage(Page<TraceabilityEvent> eventsPage) {
+        if (eventsPage == null || !eventsPage.hasContent()) {
+            assert eventsPage != null;
+            return Page.empty(eventsPage.getPageable());
+        }
+
+        // 1. Obtener detalles completos de los usuarios (actores)
+        List<UUID> actorIds = eventsPage.getContent().stream().map(TraceabilityEvent::getActorId).distinct().toList();
+        Map<UUID, UserDetails> userDetailsMap = userQueryService.getUserDetailsForIds(actorIds);
+
+        // 2. A partir de los detalles de usuario, obtener los IDs únicos de las empresas
+        List<UUID> enterpriseIds = userDetailsMap.values().stream().map(UserDetails::enterpriseId).distinct().toList();
+        Map<UUID, EnterpriseResource> enterpriseDetailsMap = enterpriseQueryService.getEnterprisesByIds(enterpriseIds);
+
+        // 3. Mapear la página de eventos a recursos, inyectando toda la información enriquecida
+        return eventsPage.map(event -> {
+            UserDetails userDetails = userDetailsMap.get(event.getActorId());
+            EnterpriseResource enterprise = (userDetails != null) ? enterpriseDetailsMap.get(userDetails.enterpriseId()) : null;
+
+            return TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(
+                    event,
+                    (userDetails != null) ? userDetails.email() : null,
+                    enterprise,
+                    this.txUrlTemplate
+            );
+        });
     }
 }

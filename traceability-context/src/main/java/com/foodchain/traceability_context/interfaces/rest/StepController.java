@@ -2,9 +2,7 @@
 package com.foodchain.traceability_context.interfaces.rest;
 
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;
-import com.foodchain.traceability_context.domain.model.queries.GetTraceabilityEventsByBatchIdQuery;
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
-import com.foodchain.traceability_context.domain.services.TraceabilityQueryService;
 import com.foodchain.traceability_context.interfaces.rest.resources.CorrectStepResource;
 import com.foodchain.traceability_context.interfaces.rest.resources.RegisterStepResource;
 import com.foodchain.traceability_context.interfaces.rest.resources.TraceabilityEventResource;
@@ -24,9 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/trace/events")
@@ -34,11 +30,9 @@ import java.util.stream.Collectors;
 public class StepController {
 
     private final TraceabilityCommandService traceabilityCommandService;
-    private final TraceabilityQueryService traceabilityQueryService;
 
-    public StepController(TraceabilityCommandService traceabilityCommandService, TraceabilityQueryService traceabilityQueryService) {
+    public StepController(TraceabilityCommandService traceabilityCommandService) {
         this.traceabilityCommandService = traceabilityCommandService;
-        this.traceabilityQueryService = traceabilityQueryService;
     }
 
     @Operation(
@@ -69,37 +63,19 @@ public class StepController {
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        // 1. Crear el comando usando el Assembler, ahora con el actorId
         var command = RegisterTraceabilityEventCommandFromResourceAssembler.toCommandFromResource(resource, userDetails.userId(), file);
-
-        // 2.  El servicio ahora devuelve la entidad completa
         var newEvent = traceabilityCommandService.handle(command);
 
-        // 3. La convertimos al recurso de la API
-        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(newEvent);
+        // Usamos el Assembler simple. El enriquecimiento es responsabilidad de los controladores de consulta.
+        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(newEvent, userDetails.email(), null, null);
 
-        // 4. Devolvemos 201 Created con el recurso completo en el cuerpo
         return ResponseEntity.status(HttpStatus.CREATED).body(eventResource);
     }
 
-    @Operation(summary = "Obtener el historial de un lote", description = "Devuelve la lista completa de eventos de trazabilidad para un lote específico, ordenados por fecha.")
+    @Operation(summary = "Corregir un evento existente", description = "...")
     @ApiResponses()
-    @GetMapping("/batch/{batchId}")
-    @PreAuthorize("isAuthenticated()") // La autorización de propiedad se hace en la capa de aplicación
-    public ResponseEntity<List<TraceabilityEventResource>> getEventsByBatch(
-            @Parameter(description = "ID del lote a consultar") @PathVariable UUID batchId,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        var query = new GetTraceabilityEventsByBatchIdQuery(batchId, userDetails.enterpriseId());
-        var events = traceabilityQueryService.handle(query);
-        var resources = events.stream()
-                .map(TraceabilityEventResourceFromEntityAssembler::toResourceFromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(resources);
-    }
-
     @PostMapping(path = "/{originalEventId}/correction", consumes = "multipart/form-data")
-    @PreAuthorize("hasRole('ENTERPRISE_ADMIN')") // ¡Solo un admin puede corregir!
+    @PreAuthorize("hasRole('ENTERPRISE_ADMIN')")
     public ResponseEntity<TraceabilityEventResource> correctStep(
             @Parameter(description = "ID del evento original a corregir") @PathVariable UUID originalEventId,
             @Valid @RequestPart("correction") CorrectStepResource resource,
@@ -110,8 +86,7 @@ public class StepController {
                 originalEventId, resource, userDetails.userId(), file);
         var correctedEvent = traceabilityCommandService.handle(command);
 
-        // También usamos la versión simple aquí.
-        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(correctedEvent);
+        var eventResource = TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(correctedEvent, userDetails.email(), null, null);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(eventResource);
     }

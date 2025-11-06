@@ -12,8 +12,8 @@ public record TraceabilityEventResource(
         UUID batchId,
         String eventType,
         Date eventDate,
-        UUID actorId,
         String actorName,
+        EnterpriseInfoResource  enterpriseId,
         LocationResource location,
         String blockchainStatus,
         String transactionHash, // Será nulo al principio
@@ -31,5 +31,14 @@ public record TraceabilityEventResource(
             String city,
             String region,
             String country
+    ) {}
+
+    /**
+     * DTO anidado para la información pública de la empresa.
+     */
+    public record EnterpriseInfoResource(
+            UUID enterpriseId,
+            String name,
+            String logoUrl
     ) {}
 }
