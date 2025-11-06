@@ -1,4 +1,4 @@
-﻿// infrastructure/outbound/geolocation/GoogleGeocodingServiceImpl.java
+// infrastructure/outbound/geolocation/GoogleGeocodingServiceImpl.java
 package com.foodchain.traceability_context.infrastructure.outbound.geolocation;
 
 import com.foodchain.traceability_context.application.outbound.geolocation.GeocodingService;

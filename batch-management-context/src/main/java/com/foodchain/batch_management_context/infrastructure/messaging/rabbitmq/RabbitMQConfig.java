@@ -1,4 +1,4 @@
-﻿package com.foodchain.batch_management_context.infrastructure.messaging.rabbitmq; // ¡OJO! CAMBIA ESTE PACKAGE SEGÚN EL MÓDULO
+package com.foodchain.batch_management_context.infrastructure.messaging.rabbitmq; // ¡OJO! CAMBIA ESTE PACKAGE SEGÚN EL MÓDULO
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

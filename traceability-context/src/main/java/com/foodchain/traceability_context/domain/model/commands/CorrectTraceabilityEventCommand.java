@@ -1,4 +1,4 @@
-﻿// domain/model/commands/CorrectTraceabilityEventCommand.java
+// domain/model/commands/CorrectTraceabilityEventCommand.java
 package com.foodchain.traceability_context.domain.model.commands;
 
 import org.springframework.web.multipart.MultipartFile;

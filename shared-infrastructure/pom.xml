@@ -42,7 +42,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-        <!-- También necesitará la dependencia a shared-domain si usa clases de ahí -->
         <dependency>
             <groupId>com.foodchain</groupId>
             <artifactId>shared-domain</artifactId>

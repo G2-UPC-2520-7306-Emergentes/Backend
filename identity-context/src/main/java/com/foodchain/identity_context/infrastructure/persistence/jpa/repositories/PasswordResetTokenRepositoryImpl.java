@@ -1,4 +1,4 @@
-﻿// infrastructure/persistence/jpa/repositories/PasswordResetTokenRepositoryImpl.java
+// infrastructure/persistence/jpa/repositories/PasswordResetTokenRepositoryImpl.java
 package com.foodchain.identity_context.infrastructure.persistence.jpa.repositories;
 
 import com.foodchain.identity_context.domain.model.entities.PasswordResetToken;

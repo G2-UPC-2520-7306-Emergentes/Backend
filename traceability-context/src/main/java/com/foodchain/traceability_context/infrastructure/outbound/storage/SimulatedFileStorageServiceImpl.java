@@ -1,4 +1,4 @@
-﻿// traceability-context/src/main/java/com/foodchain/traceability_context/infrastructure/outbound/storage/SimulatedFileStorageServiceImpl.java
+// traceability-context/src/main/java/com/foodchain/traceability_context/infrastructure/outbound/storage/SimulatedFileStorageServiceImpl.java
 package com.foodchain.traceability_context.infrastructure.outbound.storage;
 
 import com.foodchain.traceability_context.application.outbound.storage.FileStorageService;

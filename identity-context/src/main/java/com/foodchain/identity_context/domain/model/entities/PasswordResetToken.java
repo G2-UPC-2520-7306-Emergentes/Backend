@@ -1,4 +1,4 @@
-﻿// domain/model/entities/PasswordResetToken.java
+// domain/model/entities/PasswordResetToken.java
 package com.foodchain.identity_context.domain.model.entities;
 
 import com.foodchain.identity_context.domain.model.aggregates.User;

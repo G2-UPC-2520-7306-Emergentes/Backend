@@ -1,4 +1,4 @@
-﻿// interfaces/rest/resources/CorrectStepResource.java
+// interfaces/rest/resources/CorrectStepResource.java
 package com.foodchain.traceability_context.interfaces.rest.resources;
 
 import jakarta.validation.constraints.NotBlank;

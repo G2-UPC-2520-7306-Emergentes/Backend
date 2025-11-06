@@ -1,4 +1,4 @@
-﻿// interfaces/messaging/TraceabilityEventListener.java
+// interfaces/messaging/TraceabilityEventListener.java
 package com.foodchain.batch_management_context.interfaces.messaging;
 
 import com.foodchain.batch_management_context.application.internal.events.StepRegisteredEvent;

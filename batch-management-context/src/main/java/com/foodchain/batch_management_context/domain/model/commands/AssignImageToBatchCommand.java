@@ -1,4 +1,4 @@
-﻿// domain/model/commands/AssignImageToBatchCommand.java
+// domain/model/commands/AssignImageToBatchCommand.java
 package com.foodchain.batch_management_context.domain.model.commands;
 
 import org.springframework.web.multipart.MultipartFile;

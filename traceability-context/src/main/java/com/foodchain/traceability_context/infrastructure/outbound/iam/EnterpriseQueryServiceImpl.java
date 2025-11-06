@@ -1,4 +1,4 @@
-﻿// EN: traceability-context/infrastructure/outbound/iam/EnterpriseQueryServiceImpl.java
+// EN: traceability-context/infrastructure/outbound/iam/EnterpriseQueryServiceImpl.java
 package com.foodchain.traceability_context.infrastructure.outbound.iam;
 
 import com.foodchain.traceability_context.application.outbound.iam.EnterpriseQueryService;

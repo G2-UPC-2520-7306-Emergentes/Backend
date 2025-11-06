@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -18,13 +18,16 @@
     <description>Proyecto padre para los microservicios de la plataforma FoodChain.</description>
 
     <modules>
+        <!-- MÓDULOS BASE PRIMERO -->
+        <module>shared-domain</module>
+        <module>shared-infrastructure</module>
+
+        <!-- MICROSERVICIOS DESPUÉS -->
         <module>api-gateway</module>
         <module>identity-context</module>
         <module>batch-management-context</module>
         <module>traceability-context</module>
         <module>blockchain-worker-context</module>
-        <module>shared-domain</module>
-        <module>shared-infrastructure</module>
     </modules>
 
     <properties>

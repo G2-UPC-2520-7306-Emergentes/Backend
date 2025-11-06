@@ -1,4 +1,4 @@
-﻿// application/outbound/geolocation/GeocodingService.java
+// application/outbound/geolocation/GeocodingService.java
 package com.foodchain.traceability_context.application.outbound.geolocation;
 
 import com.foodchain.traceability_context.domain.model.valueobjects.Location;

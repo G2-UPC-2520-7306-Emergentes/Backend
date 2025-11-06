@@ -1,4 +1,4 @@
-﻿// domain/model/commands/DeleteBatchCommand.java
+// domain/model/commands/DeleteBatchCommand.java
 package com.foodchain.batch_management_context.domain.model.commands;
 
 import java.util.UUID;

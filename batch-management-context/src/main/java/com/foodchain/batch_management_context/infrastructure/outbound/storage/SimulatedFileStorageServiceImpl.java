@@ -1,4 +1,4 @@
-﻿// infrastructure/outbound/storage/SimulatedFileStorageServiceImpl.java
+// infrastructure/outbound/storage/SimulatedFileStorageServiceImpl.java
 package com.foodchain.batch_management_context.infrastructure.outbound.storage;
 
 import com.foodchain.batch_management_context.application.outbound.storage.FileStorageService;

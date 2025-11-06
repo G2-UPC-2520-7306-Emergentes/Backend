@@ -1,4 +1,4 @@
-﻿package com.foodchain.shared_infrastructure.infrastructure.config;
+package com.foodchain.shared_infrastructure.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

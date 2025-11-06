@@ -1,4 +1,4 @@
-﻿// interfaces/rest/transform/UserResourceFromEntityAssembler.java
+// interfaces/rest/transform/UserResourceFromEntityAssembler.java
 package com.foodchain.identity_context.interfaces.rest.transform;
 
 import com.foodchain.identity_context.domain.model.aggregates.User;

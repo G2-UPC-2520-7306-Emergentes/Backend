@@ -1,4 +1,4 @@
-﻿// interfaces/rest/resources/RoutePointResource.java
+// interfaces/rest/resources/RoutePointResource.java
 package com.foodchain.traceability_context.interfaces.rest.resources;
 
 import java.util.Date;

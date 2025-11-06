@@ -1,4 +1,4 @@
-﻿// application/outbound/traceability/TraceabilityService.java
+// application/outbound/traceability/TraceabilityService.java
 package com.foodchain.batch_management_context.application.outbound.traceability;
 
 import java.util.UUID;

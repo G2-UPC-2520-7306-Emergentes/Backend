@@ -1,4 +1,4 @@
-﻿package com.foodchain.identity_context.infrastructure.persistence.jpa.repositories;
+package com.foodchain.identity_context.infrastructure.persistence.jpa.repositories;
 
 import com.foodchain.identity_context.domain.model.entities.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;

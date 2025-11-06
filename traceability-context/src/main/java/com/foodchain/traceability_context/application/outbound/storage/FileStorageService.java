@@ -1,4 +1,4 @@
-﻿// traceability-context/src/main/java/com/foodchain/traceability_context/application/outbound/storage/FileStorageService.java
+// traceability-context/src/main/java/com/foodchain/traceability_context/application/outbound/storage/FileStorageService.java
 package com.foodchain.traceability_context.application.outbound.storage;
 
 import org.springframework.web.multipart.MultipartFile;

@@ -1,4 +1,4 @@
-﻿// application/internal/commandservices/BatchStateManagementServiceImpl.java
+// application/internal/commandservices/BatchStateManagementServiceImpl.java
 package com.foodchain.batch_management_context.application.internal.commandservices;
 
 import com.foodchain.batch_management_context.application.internal.events.StepRegisteredEvent;

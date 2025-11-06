@@ -5,6 +5,17 @@
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/resources/application.yml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/internal/commandservices/BatchCommandServiceImpl.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/internal/commandservices/BatchStateManagementServiceImpl.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/internal/events/StepRegisteredEvent.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/outbound/storage/FileStorageService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/application/outbound/traceability/TraceabilityService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/aggregates/Batch.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/commands/AssignImageToBatchCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/commands/CloseBatchCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/commands/DeleteBatchCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/commands/DuplicateBatchCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/commands/EditBatchCommand.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/batch-management-context/src/main/java/com/foodchain/batch_management_context/domain/model/queries/GetBatchByIdQuery.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/blockchain-worker-context/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-context/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-context/src/main/java/com/foodchain/identity_context/application/internal/queryservices/UserQueryServiceImpl.java" charset="UTF-8" />
@@ -15,6 +26,7 @@
     <file url="file://$PROJECT_DIR$/shared-domain/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared-domain/src/main/java/com/foodchain/shared_domain/domain/model/aggregates/AuditableAbstractAggregateRoot.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared-infrastructure/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shared-infrastructure/src/main/java/com/foodchain/shared_infrastructure/infrastructure/security/BearerAuthorizationRequestFilter.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/traceability-context/src/main/java" charset="UTF-8" />

@@ -1,4 +1,4 @@
-﻿// domain/model/commands/EditBatchCommand.java
+// domain/model/commands/EditBatchCommand.java
 package com.foodchain.batch_management_context.domain.model.commands;
 
 import java.util.UUID;

@@ -1,4 +1,4 @@
-﻿// interfaces/rest/transform/RoutePointResourceFromEntityAssembler.java
+// interfaces/rest/transform/RoutePointResourceFromEntityAssembler.java
 package com.foodchain.traceability_context.interfaces.rest.transform;
 
 import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;

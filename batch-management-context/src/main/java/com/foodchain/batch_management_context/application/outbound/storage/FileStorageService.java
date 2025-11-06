@@ -1,4 +1,4 @@
-﻿// application/outbound/storage/FileStorageService.java
+// application/outbound/storage/FileStorageService.java
 package com.foodchain.batch_management_context.application.outbound.storage;
 
 import org.springframework.web.multipart.MultipartFile;

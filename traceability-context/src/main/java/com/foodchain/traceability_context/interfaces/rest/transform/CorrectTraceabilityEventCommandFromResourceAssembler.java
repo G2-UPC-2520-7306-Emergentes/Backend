@@ -1,4 +1,4 @@
-﻿package com.foodchain.traceability_context.interfaces.rest.transform;
+package com.foodchain.traceability_context.interfaces.rest.transform;
 
 import com.foodchain.traceability_context.domain.model.commands.CorrectTraceabilityEventCommand;
 import com.foodchain.traceability_context.interfaces.rest.resources.CorrectStepResource;

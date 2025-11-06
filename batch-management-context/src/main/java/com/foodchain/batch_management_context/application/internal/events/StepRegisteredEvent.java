@@ -1,4 +1,4 @@
-﻿package com.foodchain.batch_management_context.application.internal.events;
+package com.foodchain.batch_management_context.application.internal.events;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,4 +1,4 @@
-﻿// infrastructure/outbound/hashing/SHA256HashingServiceImpl.java
+// infrastructure/outbound/hashing/SHA256HashingServiceImpl.java
 package com.foodchain.traceability_context.infrastructure.outbound.hashing;
 
 import com.foodchain.traceability_context.application.outbound.hashing.HashingService;

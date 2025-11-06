@@ -1,4 +1,4 @@
-﻿// domain/repository/InvalidatedTokenRepository.java
+// domain/repository/InvalidatedTokenRepository.java
 package com.foodchain.identity_context.domain.repositories;
 
 import com.foodchain.identity_context.domain.model.entities.InvalidatedToken;

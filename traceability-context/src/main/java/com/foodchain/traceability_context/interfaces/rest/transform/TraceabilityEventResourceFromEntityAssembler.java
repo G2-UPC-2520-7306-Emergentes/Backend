@@ -1,4 +1,4 @@
-﻿// EN: traceability-context/src/main/java/com/foodchain/traceability_context/interfaces/rest/transform/TraceabilityEventResourceFromEntityAssembler.java
+// EN: traceability-context/src/main/java/com/foodchain/traceability_context/interfaces/rest/transform/TraceabilityEventResourceFromEntityAssembler.java
 package com.foodchain.traceability_context.interfaces.rest.transform;
 
 import com.foodchain.traceability_context.application.outbound.iam.EnterpriseResource;

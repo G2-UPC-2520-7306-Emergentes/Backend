@@ -1,4 +1,4 @@
-﻿// traceability-context/application/outbound/batches/BatchQueryService.java
+// traceability-context/application/outbound/batches/BatchQueryService.java
 package com.foodchain.traceability_context.application.outbound.batches;
 
 import java.util.Optional;

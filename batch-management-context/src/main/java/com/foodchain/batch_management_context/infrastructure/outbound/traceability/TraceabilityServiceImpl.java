@@ -1,4 +1,4 @@
-﻿// EN: batch-management-context/src/main/java/com/foodchain/batch_management_context/infrastructure/outbound/traceability/TraceabilityServiceImpl.java
+// EN: batch-management-context/src/main/java/com/foodchain/batch_management_context/infrastructure/outbound/traceability/TraceabilityServiceImpl.java
 package com.foodchain.batch_management_context.infrastructure.outbound.traceability;
 
 import com.foodchain.batch_management_context.application.outbound.traceability.TraceabilityService;

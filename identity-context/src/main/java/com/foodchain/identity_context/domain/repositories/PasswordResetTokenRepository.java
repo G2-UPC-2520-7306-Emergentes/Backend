@@ -1,4 +1,4 @@
-﻿// domain/repository/PasswordResetTokenRepository.java
+// domain/repository/PasswordResetTokenRepository.java
 package com.foodchain.identity_context.domain.repositories;
 
 import com.foodchain.identity_context.domain.model.entities.PasswordResetToken;

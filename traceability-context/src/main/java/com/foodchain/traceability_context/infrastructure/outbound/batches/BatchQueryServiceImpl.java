@@ -1,4 +1,4 @@
-﻿package com.foodchain.traceability_context.infrastructure.outbound.batches;
+package com.foodchain.traceability_context.infrastructure.outbound.batches;
 
 import com.foodchain.traceability_context.application.outbound.batches.BatchQueryService;
 import org.springframework.beans.factory.annotation.Value;

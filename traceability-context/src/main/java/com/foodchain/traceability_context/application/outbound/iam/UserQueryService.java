@@ -1,4 +1,4 @@
-﻿// EN: traceability-context/application/outbound/iam/UserQueryService.java
+// EN: traceability-context/application/outbound/iam/UserQueryService.java
 package com.foodchain.traceability_context.application.outbound.iam;
 
 import com.foodchain.shared_domain.domain.model.aggregates.UserDetails;

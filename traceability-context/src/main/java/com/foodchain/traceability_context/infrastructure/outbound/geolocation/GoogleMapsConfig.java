@@ -1,4 +1,4 @@
-﻿// infrastructure/outbound/geolocation/GoogleMapsConfig.java
+// infrastructure/outbound/geolocation/GoogleMapsConfig.java
 package com.foodchain.traceability_context.infrastructure.outbound.geolocation;
 
 import com.google.maps.GeoApiContext;

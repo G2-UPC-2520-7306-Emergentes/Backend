@@ -1,4 +1,4 @@
-﻿# Este archivo orquesta el lanzamiento del ecosistema completo de FoodChain.
+# Este archivo orquesta el lanzamiento del ecosistema completo de FoodChain.
 services:
   # -------------------------------------------------
   # --- INFRAESTRUCTURA DE TERCEROS ---

@@ -1,4 +1,4 @@
-﻿// domain/model/entities/InvalidatedToken.java
+// domain/model/entities/InvalidatedToken.java
 package com.foodchain.identity_context.domain.model.entities;
 
 import jakarta.persistence.*;
