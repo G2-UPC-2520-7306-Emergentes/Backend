@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,17 +52,22 @@ public class TraceabilityQueryController {
      */
     @GetMapping("/batch/{batchId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<TraceabilityEventResource>> getEventsForActor(
-            @Parameter(description = "ID del lote a consultar") @PathVariable UUID batchId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Page<TraceabilityEventResource>> getEventsForActor(
+            @PathVariable UUID batchId,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Pageable pageable) { // Spring MVC crea este objeto a partir de los parámetros ?page=X&size=Y&sort=Z
 
         var query = new GetTraceabilityEventsByBatchIdQuery(batchId, userDetails.enterpriseId());
-        var events = traceabilityQueryService.handle(query);
+        // El servicio ahora devuelve un Page de entidades
+        var eventsPage = traceabilityQueryService.handle(query, pageable);
 
-        // Se llama al método de enriquecimiento
-        var resources = enrichEventsWithActorNames(events);
-
-        return ResponseEntity.ok(resources);
+        // Usamos el método 'map' de Page para convertir su contenido sin perder la información de paginación
+        var resourcesPage = eventsPage.map(event -> {
+            // La orquestación para enriquecer con nombres se hace aquí
+            String actorName = userQueryService.getUsernamesForIds(List.of(event.getActorId())).get(event.getActorId());
+            return TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(event, actorName, txUrlTemplate);
+        });
+        return ResponseEntity.ok(resourcesPage);
     }
 
 
@@ -70,16 +77,24 @@ public class TraceabilityQueryController {
      */
     @Operation(summary = "Obtener el historial público de un lote", description = "Devuelve la lista de eventos para un lote específico. Solo funciona si el lote está en un estado público (ej. 'FOR_SALE' o 'CLOSED').")
     @GetMapping("/public/batch/{batchId}")
-    public ResponseEntity<List<TraceabilityEventResource>> getPublicEvents(
-            @Parameter(description = "ID del lote escaneado en el código QR") @PathVariable UUID batchId) {
+    public ResponseEntity<Page<TraceabilityEventResource>> getPublicEvents(
+            @PathVariable UUID batchId,
+            Pageable pageable) {
 
         var query = new GetPublicTraceabilityEventsByBatchIdQuery(batchId);
-        var events = traceabilityQueryService.handle(query);
+        var eventsPage = traceabilityQueryService.handle(query, pageable);
 
-        // Se llama al mismo método de enriquecimiento
-        var resources = enrichEventsWithActorNames(events);
+        // Extraemos todos los IDs de la página actual para hacer una sola llamada de red
+        var actorIds = eventsPage.getContent().stream().map(TraceabilityEvent::getActorId).distinct().toList();
+        var actorNames = userQueryService.getUsernamesForIds(actorIds);
 
-        return ResponseEntity.ok(resources);
+        var resourcesPage = eventsPage.map(event -> TraceabilityEventResourceFromEntityAssembler.toResourceFromEntity(
+                event,
+                actorNames.get(event.getActorId()),
+                this.txUrlTemplate
+        ));
+
+        return ResponseEntity.ok(resourcesPage);
     }
 
     /**

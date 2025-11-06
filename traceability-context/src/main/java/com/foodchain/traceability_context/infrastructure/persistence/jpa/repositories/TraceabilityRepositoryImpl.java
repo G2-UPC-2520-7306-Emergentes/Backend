@@ -3,7 +3,10 @@ package com.foodchain.traceability_context.infrastructure.persistence.jpa.reposi
 
 import com.foodchain.traceability_context.domain.model.entities.TraceabilityEvent;
 import com.foodchain.traceability_context.domain.repository.TraceabilityRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,5 +32,9 @@ public class TraceabilityRepositoryImpl implements TraceabilityRepository {
     @Override
     public Optional<TraceabilityEvent> findLatestByBatchId(UUID batchId) {
         return jpaRepository.findTopByBatchIdOrderByEventDateDesc(batchId);
+    }
+    @Override
+    public Page<TraceabilityEvent> findByBatchId(UUID batchId, Pageable pageable) {
+        return jpaRepository.findByBatchId(batchId, pageable);
     }
 }
