@@ -18,7 +18,8 @@ public record TraceabilityEventResource(
         String blockchainStatus,
         String transactionHash, // Será nulo al principio
         String proofImageUrl,
-        String proofImageHash
+        String proofImageHash,
+        String verificationUrl
 ) {
     /**
      * DTO anidado para la ubicación.

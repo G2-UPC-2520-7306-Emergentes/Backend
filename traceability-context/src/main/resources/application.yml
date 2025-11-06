@@ -50,3 +50,9 @@ openapi:
 google:
   maps:
     api-key: "AIzaSyCVwdhZWFdAZ2xVRjNF-9rCwaxvhm5pbGk"
+
+# Configuración de la integración con la Blockchain para fines de verificación
+blockchain:
+  explorer:
+    # La URL base para ver una transacción, con un placeholder {txHash}
+    tx-url-template: "https://www.oklink.com/amoy/tx/{txHash}"
