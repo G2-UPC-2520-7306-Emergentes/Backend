@@ -1,4 +1,4 @@
-﻿// interfaces/rest/resources/UserResource.java
+// interfaces/rest/resources/UserResource.java
 package com.foodchain.identity_context.interfaces.rest.resources;
 
 import java.util.Set;

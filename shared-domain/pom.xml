@@ -60,8 +60,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Le decimos al plugin que NO reempaquete esta librería -->
+                    <skip>true</skip>
+                </configuration>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

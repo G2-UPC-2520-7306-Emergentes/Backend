@@ -1,4 +1,4 @@
-﻿// EN: identity-context/interfaces/rest/resources/EnterpriseResource.java
+// EN: identity-context/interfaces/rest/resources/EnterpriseResource.java
 package com.foodchain.identity_context.interfaces.rest.resources;
 
 import java.util.List;

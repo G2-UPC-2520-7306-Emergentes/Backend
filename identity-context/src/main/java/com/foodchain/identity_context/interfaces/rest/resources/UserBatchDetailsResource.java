@@ -1,4 +1,4 @@
-﻿// EN: identity-context/interfaces/rest/resources/UserBatchDetailsResource.java
+// EN: identity-context/interfaces/rest/resources/UserBatchDetailsResource.java
 package com.foodchain.identity_context.interfaces.rest.resources;
 
 import java.util.Set;

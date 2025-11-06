@@ -1,4 +1,4 @@
-﻿// domain/model/commands/AssignUserRoleCommand.java
+// domain/model/commands/AssignUserRoleCommand.java
 package com.foodchain.identity_context.domain.model.commands;
 
 import java.util.UUID;
