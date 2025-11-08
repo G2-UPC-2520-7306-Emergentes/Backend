@@ -1,8 +1,8 @@
 // interfaces/messaging/TraceabilityEventListener.java
 package com.foodchain.batch_management_context.interfaces.messaging;
 
-import com.foodchain.batch_management_context.application.internal.events.StepRegisteredEvent;
 import com.foodchain.batch_management_context.domain.services.BatchStateManagementService;
+import com.foodchain.shared_domain.events.StepRegisteredEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

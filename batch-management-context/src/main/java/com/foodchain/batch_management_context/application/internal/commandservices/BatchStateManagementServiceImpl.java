@@ -1,10 +1,10 @@
 // application/internal/commandservices/BatchStateManagementServiceImpl.java
 package com.foodchain.batch_management_context.application.internal.commandservices;
 
-import com.foodchain.batch_management_context.application.internal.events.StepRegisteredEvent;
 import com.foodchain.batch_management_context.domain.model.valueobjects.BatchId;
 import com.foodchain.batch_management_context.domain.repositories.BatchRepository;
 import com.foodchain.batch_management_context.domain.services.BatchStateManagementService;
+import com.foodchain.shared_domain.events.StepRegisteredEvent;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

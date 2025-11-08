@@ -36,26 +36,4 @@ public class RabbitMQConfig {
         // Enlazamos la cola al exchange usando la routing key.
         return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
     }
-
-    @Bean
-    public MessageConverter jsonMessageConverter() {
-        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
-
-        // --- CONFIGURACIÓN DEL MAPEO DE CLASES ---
-        DefaultClassMapper classMapper = new DefaultClassMapper();
-        Map<String, Class<?>> idClassMapping = new HashMap<>();
-
-        String producerEventClassId = "com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent";
-
-        Class<?> consumerEventClass = com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent.class;
-
-
-        // Creamos el mapa de traducción.
-        idClassMapping.put(producerEventClassId, consumerEventClass);
-
-        classMapper.setIdClassMapping(idClassMapping);
-        converter.setClassMapper(classMapper);
-
-        return converter;
-    }
 }

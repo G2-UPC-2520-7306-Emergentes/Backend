@@ -34,3 +34,29 @@
 /batch-management-context/target/classes/com/foodchain/batch_management_context/infrastructure/outbound/iam/IamServiceImpl.class
 /batch-management-context/target/classes/com/foodchain/batch_management_context/application/outbound/iam/UserDetails.class
 /batch-management-context/target/classes/com/foodchain/batch_management_context/infrastructure/security/WebSecurityConfiguration.class
+/batch-management-context/target/
+
+# Archivos compilados de Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+logs/
+
+# Archivos del IDE (IntelliJ)
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Archivos del IDE (VSCode)
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

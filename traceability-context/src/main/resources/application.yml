@@ -31,6 +31,9 @@ api:
         enterprise-url: "http://localhost:8081/api/v1/enterprises"
       batch-service:
         base-url: "http://localhost:8082/api/v1/batches"
+    google:
+      maps:
+        api-key: "AIzaSyCVwdhZWFdAZ2xVRjNF-9rCwaxvhm5pbGk"
 
 ---
 # --- PERFIL DOCKER ---
@@ -47,9 +50,7 @@ openapi:
     version: "v1.0.0"
     description: "API para el registro de eventos de trazabilidad en la plataforma FoodChain."
 
-google:
-  maps:
-    api-key: "AIzaSyCVwdhZWFdAZ2xVRjNF-9rCwaxvhm5pbGk"
+
 
 # Configuración de la integración con la Blockchain para fines de verificación
 blockchain:

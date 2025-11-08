@@ -1,10 +1,10 @@
 // application/internal/commandservices/TraceabilityCommandServiceImpl.java
 package com.foodchain.traceability_context.application.internal.commandservices;
 
+import com.foodchain.shared_domain.events.StepRegisteredEvent;
 import com.foodchain.traceability_context.application.outbound.geolocation.GeocodingService;
 import com.foodchain.traceability_context.application.outbound.hashing.HashingService;
 import com.foodchain.traceability_context.application.outbound.messaging.events.EventPublisher;
-import com.foodchain.traceability_context.application.outbound.messaging.events.StepRegisteredEvent;
 import com.foodchain.traceability_context.application.outbound.storage.FileStorageService;
 import com.foodchain.traceability_context.domain.model.commands.CorrectTraceabilityEventCommand;
 import com.foodchain.traceability_context.domain.model.commands.RegisterTraceabilityEventCommand;
@@ -13,6 +13,7 @@ import com.foodchain.traceability_context.domain.model.valueobjects.Location;
 import com.foodchain.traceability_context.domain.repository.TraceabilityRepository;
 import com.foodchain.traceability_context.domain.services.TraceabilityCommandService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
