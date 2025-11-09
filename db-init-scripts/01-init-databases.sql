@@ -1,4 +1,4 @@
-﻿-- Este script se ejecuta después de que el usuario y la DB principal (identity_db)
+-- Este script se ejecuta después de que el usuario y la DB principal (identity_db)
 -- hayan sido creados por las variables de entorno de Docker.
 
 -- Creamos las bases de datos adicionales para los otros servicios.

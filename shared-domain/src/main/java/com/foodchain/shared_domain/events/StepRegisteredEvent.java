@@ -1,4 +1,4 @@
-﻿// EN: shared-domain/src/main/java/com/foodchain/shared_domain/events/StepRegisteredEvent.java
+// EN: shared-domain/src/main/java/com/foodchain/shared_domain/events/StepRegisteredEvent.java
 package com.foodchain.shared_domain.events;
 
 import java.io.Serializable;

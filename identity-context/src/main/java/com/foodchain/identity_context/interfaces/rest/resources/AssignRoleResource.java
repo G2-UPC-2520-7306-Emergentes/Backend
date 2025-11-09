@@ -1,4 +1,4 @@
-﻿// interfaces/rest/resources/AssignRoleResource.java
+// interfaces/rest/resources/AssignRoleResource.java
 package com.foodchain.identity_context.interfaces.rest.resources;
 
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-﻿# Dockerfile específico para cada módulo
+# Dockerfile específico para cada módulo
 # Colocar una copia de este archivo en la raíz de cada módulo de microservicio
 
 # Usamos una imagen base ligera solo con la JRE de Java 17

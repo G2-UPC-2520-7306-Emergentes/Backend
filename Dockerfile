@@ -1,4 +1,4 @@
-﻿# Dockerfile Raíz (E:\Solutions_IntelliJ\FoodChain-API\Dockerfile)
+# Dockerfile Raíz (E:\Solutions_IntelliJ\FoodChain-API\Dockerfile)
 
 # --- ETAPA 1: CONSTRUCCIÓN (El "Constructor") ---
 # Usamos una imagen de Maven que ya tiene JDK 17 para compilar nuestro proyecto.

@@ -1,4 +1,4 @@
-﻿package com.foodchain.identity_context.interfaces.rest.resources;
+package com.foodchain.identity_context.interfaces.rest.resources;
 
 public record ResetPasswordResource(
         @jakarta.validation.constraints.NotBlank String token,
