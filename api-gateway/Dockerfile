@@ -16,4 +16,4 @@ EXPOSE 8080
 # (Recuerda cambiar esto si el puerto por defecto no es 8080, aunque el mapeo en docker-compose lo maneja)
 
 # El comando que se ejecutará cuando el contenedor se inicie
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]

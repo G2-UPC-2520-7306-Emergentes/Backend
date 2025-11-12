@@ -48,4 +48,4 @@ COPY --from=builder /app/${MODULE_DIR}/target/${ARTIFACT_ID}-${MODULE_VERSION}.j
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
