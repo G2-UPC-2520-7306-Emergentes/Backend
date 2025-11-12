@@ -1,22 +1,28 @@
 server:
   port: 8082
 
+---
+# --- PERFIL DOCKER ---
 spring:
-  application:
-    name: batch-management-context
-
-  # --- PERFIL POR DEFECTO (para ejecución local en IntelliJ) ---
   config:
     activate:
-      on-profile: "default"
+      on-profile: "docker"
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/batch_management_db
-    username: foodchain_user
-    password: foodchain_password
+    # Le decimos a Spring que el username y password vendrán de variables de entorno
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
+  # La URL (SPRING_DATASOURCE_URL) y las URLs de las APIs (API_CLIENTS_...)
+    driver-class-name: com.mysql.cj.jdbc.Driver # ¡AÑADE ESTA LÍNEA!
+
+  # ya se inyectan automáticamente desde docker-compose, no hace falta declararlas aquí.
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   rabbitmq:
     host: 127.0.0.1
     port: 5672

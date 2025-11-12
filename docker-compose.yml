@@ -76,9 +76,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/batch_management_db"
-      # Mapeo de variable de entorno a propiedad de Spring (api.clients.iam-service.base-url)
+      SPRING_DATASOURCE_USERNAME: "foodchain_user" # ¡AÑADIR ESTA LÍNEA!
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password" # ¡AÑADIR ESTA LÍNEA!
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
-      # Mapeo para la nueva dependencia (api.clients.traceability-service.base-url)
       API_CLIENTS_TRACEABILITY-SERVICE_BASE-URL: "http://traceability-context:8083/api/v1/trace/events"
     depends_on:
       mysql:
@@ -95,6 +95,8 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
       API_CLIENTS_BATCH-SERVICE_BASE-URL: "http://batch-management-context:8082/api/v1/batches"
+      SPRING_DATASOURCE_USERNAME: "foodchain_user" # ¡AÑADIR ESTA LÍNEA!
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password" # ¡AÑADIR ESTA LÍNEA!
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
       # En Docker, Spring AMQP usará el host 'rabbitmq' definido en el perfil 'docker'
     depends_on:

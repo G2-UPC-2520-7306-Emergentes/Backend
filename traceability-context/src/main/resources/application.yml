@@ -10,9 +10,10 @@ spring:
     activate:
       on-profile: "default"
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/traceability_db
-    username: foodchain_user
-    password: foodchain_password
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
+    driver-class-name: com.mysql.cj.jdbc.Driver # ¡AÑADE ESTA LÍNEA!
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -22,6 +23,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
 # URLs para clientes API en entorno local
 api:
