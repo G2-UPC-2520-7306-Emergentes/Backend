@@ -3,6 +3,7 @@ package com.foodchain.batch_management_context.application.internal.queryservice
 
 import com.foodchain.batch_management_context.domain.model.aggregates.Batch;
 import com.foodchain.batch_management_context.domain.model.queries.GetBatchByIdQuery;
+import com.foodchain.batch_management_context.domain.model.queries.GetBatchCountByEnterprise;
 import com.foodchain.batch_management_context.domain.repositories.BatchRepository;
 import com.foodchain.batch_management_context.domain.services.BatchQueryService;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,10 @@ public class BatchQueryServiceImpl implements BatchQueryService {
     @Override
     public Optional<Batch> handle(GetBatchByIdQuery query) {
         return batchRepository.findById(query.batchId());
+    }
+
+    @Override
+    public long handle(GetBatchCountByEnterprise query) {
+        return batchRepository.countByEnterpriseId(query.enterpriseId());
     }
 }

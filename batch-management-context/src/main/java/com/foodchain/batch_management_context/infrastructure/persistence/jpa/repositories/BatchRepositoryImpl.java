@@ -18,24 +18,25 @@ public class BatchRepositoryImpl implements BatchRepository {
     public BatchRepositoryImpl(BatchJpaRepository batchJpaRepository) {
         this.batchJpaRepository = batchJpaRepository;
     }
-
     @Override
     public void save(Batch batch) {
         batchJpaRepository.save(batch);
     }
-
     @Override
     public Optional<Batch> findById(BatchId batchId) {
         return batchJpaRepository.findById(batchId);
     }
-
     @Override
     public List<Batch> findByEnterpriseId(UUID enterpriseId) {
         return batchJpaRepository.findByEnterpriseId(enterpriseId);
     }
-
     @Override
     public void delete(Batch batch) {
         batchJpaRepository.delete(batch);
+    }
+
+    @Override
+    public long countByEnterpriseId(UUID enterpriseId) {
+        return batchJpaRepository.countByEnterpriseId(enterpriseId);
     }
 }

@@ -13,4 +13,5 @@ public interface BatchRepository {
     Optional<Batch> findById(BatchId batchId);
     List<Batch> findByEnterpriseId(UUID enterpriseId);
     void delete(Batch batch);
+    long countByEnterpriseId(UUID enterpriseId);
 }

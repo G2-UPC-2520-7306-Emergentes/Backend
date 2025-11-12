@@ -12,4 +12,5 @@ import java.util.UUID;
 @Repository
 public interface BatchJpaRepository extends JpaRepository<Batch, BatchId> {
     List<Batch> findByEnterpriseId(UUID enterpriseId);
+    long countByEnterpriseId(UUID enterpriseId);
 }
