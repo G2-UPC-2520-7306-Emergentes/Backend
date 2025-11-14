@@ -1,24 +1,55 @@
+# ======================================================\n# === API GATEWAY CONFIGURATION                      ===\n# ======================================================
 server:
-  port: 8080 # Puerto de entrada �nico para todo el sistema
+  port: 8080
 
 spring:
   application:
     name: api-gateway
+
+---
+# ======================================================\n# === PERFIL DE DESARROLLO LOCAL (default)           ===\n# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "default"
   cloud:
     gateway:
-      # Aqu� definimos las reglas de enrutamiento a nuestros futuros Bounded Contexts
       routes:
         - id: identity-context-route
-          uri: http://localhost:8081 # Puerto del Identity Service
+          uri: http://localhost:8081 # Apunta al servicio corriendo en local
           predicates:
-            - Path=/api/v1/iam/** # Cualquier petici�n a /iam/... ir� a este servicio
+            - Path=/api/v1/iam/** # CUALQUIER petición a /api/v1/iam/...
 
         - id: batch-management-context-route
-          uri: http://localhost:8082 # Puerto del Batch Management Service
+          uri: http://localhost:8082
           predicates:
             - Path=/api/v1/batches/**
 
         - id: traceability-context-route
-          uri: http://localhost:8083 # Puerto del Traceability Service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/v1/trace/**
+
+---
+# ======================================================\n# === PERFIL DOCKER                                  ===\n# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  cloud:
+    gateway:
+      routes:
+        - id: identity-context-route
+          uri: http://identity-context:8081 # Apunta al nombre del contenedor
+          predicates:
+            - Path=/api/v1/iam/** # ¡ESTA ES LA REGLA CLAVE!
+
+        - id: batch-management-context-route
+          uri: http://batch-management-context:8082
+          predicates:
+            - Path=/api/v1/batches/**
+
+        - id: traceability-context-route
+          uri: http://traceability-context:8083
           predicates:
             - Path=/api/v1/trace/**

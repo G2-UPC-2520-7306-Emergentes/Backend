@@ -1,37 +1,61 @@
+# ======================================================
+# === IDENTITY CONTEXT CONFIGURATION                 ===
+# ======================================================
 server:
-  port: 8081 # Puerto unico para este microservicio
+  port: 8081
 
 spring:
   application:
     name: identity-context
-
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3307/identity_db
-    username: foodchain_user      # usa el usuario creado en docker-compose
-    password: foodchain_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
-      ddl-auto: update # 'update' es �til para desarrollo. 'validate' es mejor para produccion.
-    show-sql: true # Muestra las queries SQL en la consola para depurar.
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
 
+# Secretos y API Keys (leídos SIEMPRE de variables de entorno)
 authorization:
   jwt:
-    secret: "MiClaveSecretaSuperLargaYComplejaParaElProyectoFoodChain1234567890" # min 32 caracteres
+    secret: "${AUTH_JWT_SECRET}"
     expiration:
       days: 7
+twilio:
+  sendgrid:
+    api-key: "${TWILIO_SENDGRID_API-KEY}"
+    from-email: "${TWILIO_SENDGRID_FROM-EMAIL}"
 
 openapi:
   service:
     title: "FoodChain - Identity Service API"
     version: "v1.0.0"
-    description: "API para la gestión de Identidad y Acceso (IAM) en la plataforma FoodChain."
+    description: "API para la gestión de Identidad y Acceso (IAM)."
 
-twilio:
-  sendgrid:
-    api-key: "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"
-    from-email: "foodchainbleh@gmail.com"
+---
+# ======================================================
+# === PERFIL DE DESARROLLO LOCAL (default)           ===
+# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "default"
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/identity_db
+    username: "foodchain_user"
+    password: "foodchain_password"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+---
+# ======================================================
+# === PERFIL DOCKER                                  ===
+# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  datasource:
+    url: "${SPRING_DATASOURCE_URL}"
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
+    driver-class-name: com.mysql.cj.jdbc.Driver

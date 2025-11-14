@@ -1,63 +1,75 @@
+# ======================================================
+# === TRACEABILITY CONTEXT CONFIGURATION             ===
+# ======================================================
 server:
-  port: 8083
+ port: 8083
 
 spring:
-  application:
-    name: traceability-context
-
-  # --- PERFIL POR DEFECTO (local) ---
-  config:
-    activate:
-      on-profile: "default"
-  datasource:
-    username: "${SPRING_DATASOURCE_USERNAME}"
-    password: "${SPRING_DATASOURCE_PASSWORD}"
-    driver-class-name: com.mysql.cj.jdbc.Driver # ¡AÑADE ESTA LÍNEA!
-
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: foodchain
-    password: foodchain
+ application:
+  name: traceability-context
   jpa:
-    hibernate:
-      ddl-auto: update
+   hibernate:
+    ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+   properties:
+    hibernate:
+     dialect: org.hibernate.dialect.MySQLDialect
 
-# URLs para clientes API en entorno local
-api:
-    clients:
-      iam-service:
-        base-url: "http://localhost:8081/api/v1/iam/auth"
-        enterprise-url: "http://localhost:8081/api/v1/enterprises"
-      batch-service:
-        base-url: "http://localhost:8082/api/v1/batches"
-    google:
-      maps:
-        api-key: "AIzaSyCVwdhZWFdAZ2xVRjNF-9rCwaxvhm5pbGk"
+# Secretos y configuraciones externas leídas desde variables de entorno
+google:
+ maps:
+  api-key: "${GOOGLE_MAPS_API_KEY}"
+blockchain:
+ explorer:
+  tx-url-template: "https://www.oklink.com/amoy/tx/{txHash}"
+openapi:
+ service:
+  title: "FoodChain - Traceability Service API"
+  version: "v1.0.0"
+  description: "API para el registro de eventos de trazabilidad."
 
 ---
-# --- PERFIL DOCKER ---
+# ======================================================
+# === PERFIL DE DESARROLLO LOCAL (default)           ===
+# ======================================================
 spring:
-  config:
-    activate:
-      on-profile: "docker"
-  rabbitmq:
-    host: rabbitmq # En Docker, nos conectamos por el nombre del servicio
+ config:
+  activate:
+   on-profile: "default"
+ datasource:
+  url: jdbc:mysql://127.0.0.1:3307/traceability_db
+  username: "foodchain_user"
+  password: "foodchain_password"
+  driver-class-name: com.mysql.cj.jdbc.Driver
+ rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: "foodchain"
+  password: "foodchain"
 
-openapi:
-  service:
-    title: "FoodChain - Traceability Service API"
-    version: "v1.0.0"
-    description: "API para el registro de eventos de trazabilidad en la plataforma FoodChain."
-
-
-
-# Configuración de la integración con la Blockchain para fines de verificación
-blockchain:
-  explorer:
-    # La URL base para ver una transacción, con un placeholder {txHash}
-    tx-url-template: "https://www.oklink.com/amoy/tx/{txHash}"
+---
+# ======================================================
+# === PERFIL DOCKER                                  ===
+# ======================================================
+spring:
+ config:
+  activate:
+   on-profile: "docker"
+ datasource:
+  url: "${SPRING_DATASOURCE_URL}"
+  username: "${SPRING_DATASOURCE_USERNAME}"
+  password: "${SPRING_DATASOURCE_PASSWORD}"
+  driver-class-name: com.mysql.cj.jdbc.Driver
+ rabbitmq:
+  host: rabbitmq
+  username: "foodchain"
+  password: "foodchain"
+  # Las URLs de clientes API se inyectan desde docker-compose.yml
+  # URLs para clientes API en entorno local
+api:
+ clients:
+  iam-service:
+   user-url: "http://localhost:8081/api/v1/iam/users"
+   enterprise-url: "http://localhost:8081/api/v1/iam/enterprises/batch-details" # Asumiendo este endpoint
+  batch-service:
+   base-url: "http://localhost:8082/api/v1/batches"

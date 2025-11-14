@@ -1,32 +1,59 @@
+# ======================================================
+# === BLOCKCHAIN WORKER CONFIGURATION                ===
+# ======================================================
 server:
-  port: 8084 # Puerto único para este worker
+  port: 8084
 
 spring:
   application:
     name: blockchain-worker-context
-
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3307/traceability_db
-    username: foodchain_user
-    password: foodchain_password
-    driver-class-name: com.mysql.cj.jdbc.Driver # ¡AÑADE ESTA LÍNEA!
-
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+      show-sql: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
 
+# Secretos de Blockchain (leídos SIEMPRE de variables de entorno)
+blockchain:
+  rpc-url: "${BLOCKCHAIN_RPC-URL}"
+  contract-address: "${BLOCKCHAIN_CONTRACT-ADDRESS}"
+  private-key: "${BLOCKCHAIN_PRIVATE-KEY}"
+
+---
+# ======================================================
+# === PERFIL DE DESARROLLO LOCAL (default)           ===
+# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "default"
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/traceability_db
+    username: "foodchain_user"
+    password: "foodchain_password"
+    driver-class-name: com.mysql.cj.jdbc.Driver
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username: foodchain
-    password: foodchain
+    username: "foodchain"
+    password: "foodchain"
 
-# Configuración específica del Worker
-blockchain:
-  rpc-url: "https://polygon-amoy.g.alchemy.com/v2/jPZqucxKewq9HbUPOZd09" # URL de un nodo RPC público de la testnet de Polygon Mumbai
-  contract-address: "0x9565726b49C383c0047c78C1405894a95C74E7c8" # Dirección de tu Smart Contract
-  private-key: "0abd9a693bb03ebf7f6a9fb4717a4fc6bb620c7dfaf38d36708a5a1bba9227b3" # ¡NUNCA pongas una clave privada real aquí en producción!
+---
+# ======================================================
+# === PERFIL DOCKER                                  ===
+# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  datasource:
+    url: "${SPRING_DATASOURCE_URL}"
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    host: rabbitmq
+    username: "foodchain"
+    password: "foodchain"

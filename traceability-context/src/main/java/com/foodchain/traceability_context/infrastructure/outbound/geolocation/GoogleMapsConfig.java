@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GoogleMapsConfig {
 
-    @Value("${api.google.maps.api-key}")
+    @Value("${google.maps.api-key}")
     private String apiKey;
 
     @Bean

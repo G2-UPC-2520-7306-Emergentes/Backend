@@ -1,57 +1,58 @@
+# ======================================================
+# === BATCH MANAGEMENT CONTEXT CONFIGURATION         ===
+# ======================================================
 server:
   port: 8082
 
+spring:
+  application:
+    name: batch-management-context
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
+
+openapi:
+  service:
+    title: "FoodChain - Batch Management API"
+    version: "v1.0.0"
+    description: "API para la gestión del ciclo de vida de lotes de producción."
+
 ---
-# --- PERFIL DOCKER ---
+# ======================================================
+# === PERFIL DE DESARROLLO LOCAL (default)           ===
+# ======================================================
+spring:
+  config:
+    activate:
+      on-profile: "default"
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/batch_management_db
+    username: "foodchain_user"
+    password: "foodchain_password"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+---
+# ======================================================
+# === PERFIL DOCKER                                  ===
+# ======================================================
 spring:
   config:
     activate:
       on-profile: "docker"
   datasource:
-    # Le decimos a Spring que el username y password vendrán de variables de entorno
+    url: "${SPRING_DATASOURCE_URL}"
     username: "${SPRING_DATASOURCE_USERNAME}"
     password: "${SPRING_DATASOURCE_PASSWORD}"
-  # La URL (SPRING_DATASOURCE_URL) y las URLs de las APIs (API_CLIENTS_...)
-    driver-class-name: com.mysql.cj.jdbc.Driver # ¡AÑADE ESTA LÍNEA!
-
-  # ya se inyectan automáticamente desde docker-compose, no hace falta declararlas aquí.
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: foodchain
-    password: foodchain
-
-  # URLs para clientes API en entorno local
-api:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  api:
     clients:
       iam-service:
         base-url: "http://localhost:8081/api/v1/iam/auth"
-      # Añadimos el de trazabilidad aquí para cuando lo necesitemos
       traceability-service:
         base-url: "http://localhost:8083/api/v1/trace/events"
-
----
-# --- PERFIL DOCKER (se activa cuando se corre en un contenedor) ---
-spring:
-  config:
-    activate:
-      on-profile: "docker"
-  # En Docker, la URL de la base de datos se proporciona como una variable de entorno
-  # y los valores de api.clients... también se proporcionan como variables de entorno.
-  # No necesitamos poner nada más aquí, Spring los recogerá automáticamente.
-
----
-# --- CONFIGURACIÓN PARA LA DOCUMENTACIÓN OPENAPI ---
-openapi:
-  service:
-    title: "FoodChain - Batch Management Service API"
-    version: "v1.0.0"
-    description: "API para la gestión del ciclo de vida de lotes en la plataforma FoodChain."
+  # En Docker, las URLs de los clientes se inyectan como variables de entorno
+  # desde docker-compose.yml y Spring las mapea automáticamente a 'api.clients...'.

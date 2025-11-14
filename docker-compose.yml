@@ -1,4 +1,12 @@
-# Este archivo orquesta el lanzamiento del ecosistema completo de FoodChain.
+# ====================================================================
+# === FoodChain Backend - Docker Compose Orchestration (v1.0)      ===
+# ====================================================================
+# Flujo de trabajo:
+# 1. Construir artefactos: mvn clean install -DskipTests
+# 2. Levantar ecosistema: docker-compose up --build -d
+# 3. Detener ecosistema: docker-compose down -v
+# ====================================================================
+
 services:
   # -------------------------------------------------
   # --- INFRAESTRUCTURA DE TERCEROS ---
@@ -9,10 +17,10 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: identity_db # Solo crea la primera, el script crea las demás
-      MYSQL_USER: foodchain_user
-      MYSQL_PASSWORD: foodchain_password
+      MYSQL_ROOT_PASSWORD: "rootpassword" # Es buena práctica usar comillas
+      MYSQL_DATABASE: "identity_db"
+      MYSQL_USER: "foodchain_user"
+      MYSQL_PASSWORD: "foodchain_password"
     volumes:
       - ./db-init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
@@ -29,8 +37,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: foodchain
-      RABBITMQ_DEFAULT_PASS: foodchain
+      RABBITMQ_DEFAULT_USER: "foodchain"
+      RABBITMQ_DEFAULT_PASS: "foodchain"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -46,15 +54,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Activamos el perfil docker para todos nuestros servicios
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: "docker"
     depends_on:
-      identity-context:
-        condition: service_started
-      batch-management-context:
-        condition: service_started
-      traceability-context:
-        condition: service_started
+      identity-context: { condition: service_started }
+      batch-management-context: { condition: service_started }
+      traceability-context: { condition: service_started }
 
   identity-context:
     build: ./identity-context
@@ -62,11 +66,17 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/identity_db" # Conexión por nombre de servicio
+      SPRING_PROFILES_ACTIVE: "docker"
+      # --- Configuración de la Base de Datos ---
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/identity_db?createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_USERNAME: "foodchain_user"
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password"
+      # --- Secretos y API Keys ---
+      AUTH_JWT_SECRET: "MiClaveSecretaSuperLargaYComplejaParaElProyectoFoodChain1234567890"
+      TWILIO_SENDGRID_API-KEY: "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"
+      TWILIO_SENDGRID_FROM-EMAIL: "foodchainbleh@gmail.com"
     depends_on:
-      mysql:
-        condition: service_healthy
+      mysql: { condition: service_healthy }
 
   batch-management-context:
     build: ./batch-management-context
@@ -74,17 +84,17 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/batch_management_db"
-      SPRING_DATASOURCE_USERNAME: "foodchain_user" # ¡AÑADIR ESTA LÍNEA!
-      SPRING_DATASOURCE_PASSWORD: "foodchain_password" # ¡AÑADIR ESTA LÍNEA!
+      SPRING_PROFILES_ACTIVE: "docker"
+      # --- Configuración de la Base de Datos ---
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/batch_management_db?createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_USERNAME: "foodchain_user"
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password"
+      # --- URLs de Clientes API (Comunicación Inter-Servicio) ---
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
       API_CLIENTS_TRACEABILITY-SERVICE_BASE-URL: "http://traceability-context:8083/api/v1/trace/events"
     depends_on:
-      mysql:
-        condition: service_healthy
-      identity-context:
-        condition: service_started
+      mysql: { condition: service_healthy }
+      identity-context: { condition: service_started }
 
   traceability-context:
     build: ./traceability-context
@@ -92,32 +102,37 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
-      API_CLIENTS_BATCH-SERVICE_BASE-URL: "http://batch-management-context:8082/api/v1/batches"
-      SPRING_DATASOURCE_USERNAME: "foodchain_user" # ¡AÑADIR ESTA LÍNEA!
-      SPRING_DATASOURCE_PASSWORD: "foodchain_password" # ¡AÑADIR ESTA LÍNEA!
+      SPRING_PROFILES_ACTIVE: "docker"
+      # --- Configuración de la Base de Datos ---
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db?createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_USERNAME: "foodchain_user"
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password"
+      # --- URLs de Clientes API ---
+      API_CLIENTS_IAM-SERVICE_USER-URL: "http://identity-context:8081/api/v1/iam/users"
       API_CLIENTS_IAM-SERVICE_BASE-URL: "http://identity-context:8081/api/v1/iam/auth"
-      # En Docker, Spring AMQP usará el host 'rabbitmq' definido en el perfil 'docker'
+      API_CLIENTS_IAM-SERVICE_ENTERPRISE-URL: "http://identity-context:8081/api/v1/iam/enterprises/batch-details" # Asumiendo que creaste este endpoint
+      API_CLIENTS_BATCH-SERVICE_BASE-URL: "http://batch-management-context:8082/api/v1/batches"
+      # --- Secretos y API Keys ---
+      GOOGLE_MAPS_API_KEY: "AIzaSyCVwdhZWFdAZ2xVRjNF-9rCwaxvhm5pbGk"
     depends_on:
-      mysql:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      identity-context:
-        condition: service_started
+      mysql: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      identity-context: { condition: service_started }
+      batch-management-context: { condition: service_started }
 
   blockchain-worker-context:
     build: ./blockchain-worker-context
     container_name: blockchain_worker_context
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db"
+      SPRING_PROFILES_ACTIVE: "docker"
+      # --- Configuración de la Base de Datos ---
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/traceability_db?createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_USERNAME: "foodchain_user"
+      SPRING_DATASOURCE_PASSWORD: "foodchain_password"
+      # --- Secretos de Blockchain ---
       BLOCKCHAIN_RPC-URL: "https://polygon-amoy.g.alchemy.com/v2/jPZqucxKewq9HbUPOZd09"
       BLOCKCHAIN_CONTRACT-ADDRESS: "0x9565726b49C383c0047c78C1405894a95C74E7c8"
       BLOCKCHAIN_PRIVATE-KEY: "0abd9a693bb03ebf7f6a9fb4717a4fc6bb620c7dfaf38d36708a5a1bba9227b3"
     depends_on:
-      mysql:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      mysql: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }

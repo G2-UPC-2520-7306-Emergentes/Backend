@@ -27,7 +27,7 @@ public class TraceabilityServiceImpl implements TraceabilityService {
     private final String traceabilityServiceUrl;
 
     public TraceabilityServiceImpl(RestTemplate restTemplate, // Could not autowire. No beans of 'RestTemplate' type found.
-                                   @Value("${api.clients.traceability-service.base-url}") String traceabilityServiceUrl) {
+                                   @Value("${spring.api.clients.traceability-service.base-url}") String traceabilityServiceUrl) {
         this.restTemplate = restTemplate;
         this.traceabilityServiceUrl = traceabilityServiceUrl;
     }

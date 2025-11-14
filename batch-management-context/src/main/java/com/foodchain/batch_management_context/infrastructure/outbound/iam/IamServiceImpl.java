@@ -14,7 +14,7 @@ public class IamServiceImpl implements IamService {
     private final RestTemplate restTemplate;
     private final String iamServiceBaseUrl; // Variable para guardar la URL
 
-    public IamServiceImpl(@Value("${api.clients.iam-service.base-url}") String iamServiceBaseUrl) {
+    public IamServiceImpl(@Value("${spring.api.clients.traceability-service.base-url}") String iamServiceBaseUrl) {
         this.restTemplate = new RestTemplate();
         this.iamServiceBaseUrl = iamServiceBaseUrl;
     }
