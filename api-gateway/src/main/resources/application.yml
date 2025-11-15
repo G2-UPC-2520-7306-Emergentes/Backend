@@ -7,7 +7,9 @@ spring:
     name: api-gateway
 
 ---
-# ======================================================\n# === PERFIL DE DESARROLLO LOCAL (default)           ===\n# ======================================================
+# ======================================================
+#  === PERFIL DE DESARROLLO LOCAL (default)          ===
+#  =====================================================
 spring:
   config:
     activate:
@@ -31,18 +33,21 @@ spring:
             - Path=/api/v1/trace/**
 
 ---
-# ======================================================\n# === PERFIL DOCKER                                  ===\n# ======================================================
+# ======================================================
+# === PERFIL DOCKER                                  ===
+# ======================================================
 spring:
   config:
     activate:
       on-profile: "docker"
   cloud:
     gateway:
+      # usamos el enrutamiento directo por hostname.
       routes:
         - id: identity-context-route
-          uri: http://identity-context:8081 # Apunta al nombre del contenedor
+          uri: http://identity-context:8081
           predicates:
-            - Path=/api/v1/iam/** # ¡ESTA ES LA REGLA CLAVE!
+            - Path=/api/v1/iam/**
 
         - id: batch-management-context-route
           uri: http://batch-management-context:8082

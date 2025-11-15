@@ -104,6 +104,10 @@
             <artifactId>sendgrid-java</artifactId>
             <version>4.10.0</version> <!-- O la versión estable más reciente -->
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
